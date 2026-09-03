@@ -6,6 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdio>
+#include "SoundManager.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -151,7 +152,7 @@ float g_flyTimer = 0.0f;
 GameState g_gameState = STATE_TITLE;
 float g_sceneTime = 0.0f;
 
-HMIDIOUT g_hMidi = NULL;
+
 float g_bgmTimer = 0.0f;
 int g_bgmStep = 0;
 
@@ -249,25 +250,16 @@ float4 PS(PS_INPUT input) : SV_Target {
 }
 )";
 
-void InitAudio() {
-    if (midiOutOpen(&g_hMidi, MIDI_MAPPER, 0, 0, 0) == MMSYSERR_NOERROR) {
-        midiOutShortMsg(g_hMidi, (10 << 8) | 0xC0);
-        midiOutShortMsg(g_hMidi, (8 << 8) | 0xC1);
-    }
-}
 
-void PlayMidiNote(BYTE channel, BYTE note, BYTE velocity) {
-    if (!g_hMidi) return;
-    DWORD msg = (velocity << 16) | (note << 8) | (0x90 | (channel & 0x0F));
-    midiOutShortMsg(g_hMidi, msg);
-}
+
+
 
 void UpdateBGM(float dt) {
     g_bgmTimer += dt;
     if (g_bgmTimer >= 0.32f) {
         g_bgmTimer -= 0.32f;
         static const int melody[] = { 60, 64, 67, 72, 71, 67, 64, 62, 59, 62, 67, 71, 69, 67, 64, 60 };
-        PlayMidiNote(0, melody[g_bgmStep % 16], 70);
+        SoundManager::PlayMidiNote(0, melody[g_bgmStep % 16], 70);
         g_bgmStep++;
     }
 }
@@ -440,7 +432,7 @@ void UpdateJumpGame(float dt) {
 
             float sideX = (rand() % 2 == 0) ? 12.0f : -12.0f;
             g_sideEnemy.pos = XMFLOAT3(sideX, g_playerPos.y + 2.0f, g_playerPos.z + 6.0f);
-            PlayMidiNote(9, 82, 120);
+            SoundManager::PlayMidiNote(9, 82, 120);
         }
     }
 
@@ -472,7 +464,7 @@ void UpdateJumpGame(float dt) {
             XMStoreFloat3(&p.dir, dir);
 
             g_projectiles.push_back(p);
-            PlayMidiNote(9, 77, 100);
+            SoundManager::PlayMidiNote(9, 77, 100);
         }
 
         if (g_sideEnemy.timer <= 0.0f) {
@@ -494,7 +486,7 @@ void UpdateJumpGame(float dt) {
         XMStoreFloat3(&bullet.dir, XMVector3Normalize(camDir));
 
         g_projectiles.push_back(bullet);
-        PlayMidiNote(9, 38, 127);
+        SoundManager::PlayMidiNote(9, 38, 127);
         TriggerCameraShake(0.12f, 0.25f);
     }
     g_prevShootKey = shootPressed;
@@ -516,7 +508,7 @@ void UpdateJumpGame(float dt) {
                 proj.active = false;
                 g_stunTimer = g_stunDuration;
                 TriggerCameraShake(0.35f, 0.4f);
-                PlayMidiNote(9, 45, 127);
+                SoundManager::PlayMidiNote(9, 45, 127);
             }
         }
         else if (!proj.isEnemyBolt && g_sideEnemy.active) {
@@ -529,12 +521,12 @@ void UpdateJumpGame(float dt) {
                 proj.active = false;
                 g_sideEnemy.hp--;
                 g_sideEnemy.hitFlash = 0.2f;
-                PlayMidiNote(9, 62, 120);
+                SoundManager::PlayMidiNote(9, 62, 120);
 
                 if (g_sideEnemy.hp <= 0) {
                     g_sideEnemy.active = false;
                     TriggerCameraShake(0.5f, 0.7f);
-                    PlayMidiNote(9, 49, 127);
+                    SoundManager::PlayMidiNote(9, 49, 127);
                 }
             }
         }
@@ -572,7 +564,7 @@ void UpdateJumpGame(float dt) {
                 if (!clusterAlreadyTargeted) {
                     g_platforms[chosenIdx].isWarning = true;
                     g_platforms[chosenIdx].warningTimer = 1.8f;
-                    PlayMidiNote(9, 80, 110);
+                    SoundManager::PlayMidiNote(9, 80, 110);
                 }
             }
         }
@@ -584,7 +576,7 @@ void UpdateJumpGame(float dt) {
             if (p.crackTimer <= 0.0f) {
                 p.isDestroyed = true;
                 p.isCracking = false;
-                PlayMidiNote(9, 41, 100);
+                SoundManager::PlayMidiNote(9, 41, 100);
             }
         }
 
@@ -605,7 +597,7 @@ void UpdateJumpGame(float dt) {
                 }
 
                 TriggerCameraShake(0.45f, 0.6f);
-                PlayMidiNote(9, 38, 127);
+                SoundManager::PlayMidiNote(9, 38, 127);
             }
         }
 
@@ -636,15 +628,15 @@ void UpdateJumpGame(float dt) {
                 p.itemActive = false;
                 if (p.itemType == ITEM_HIGH_JUMP) {
                     g_highJumpTimer = g_highJumpDuration;
-                    PlayMidiNote(0, 84, 127);
+                    SoundManager::PlayMidiNote(0, 84, 127);
                 }
                 else if (p.itemType == ITEM_FLY) {
                     g_flyTimer = g_flyDuration;
-                    PlayMidiNote(0, 96, 127);
+                    SoundManager::PlayMidiNote(0, 96, 127);
                 }
                 else if (p.itemType == ITEM_GUN) {
                     g_ammoCount = 5;
-                    PlayMidiNote(0, 91, 127);
+                    SoundManager::PlayMidiNote(0, 91, 127);
                 }
             }
         }
@@ -702,7 +694,7 @@ void UpdateJumpGame(float dt) {
                 if (p.isCracked && !p.isCracking) {
                     p.isCracking = true;
                     p.crackTimer = 0.35f;
-                    PlayMidiNote(9, 37, 90);
+                    SoundManager::PlayMidiNote(9, 37, 90);
                 }
 
                 if (p.moveAxis == 1) {
@@ -712,7 +704,7 @@ void UpdateJumpGame(float dt) {
                 if (p.type == PLATFORM_BOOST) {
                     g_playerVel.y = g_highJumpPower + 0.5f;
                     g_playerGrounded = false;
-                    PlayMidiNote(9, 72, 120);
+                    SoundManager::PlayMidiNote(9, 72, 120);
                 }
                 break;
             }
@@ -728,10 +720,11 @@ void UpdateJumpGame(float dt) {
 
     if (g_stunTimer <= 0.0f && (g_playerGrounded || g_timeSinceGrounded < 0.15f) && (GetAsyncKeyState(VK_SPACE) & 0x8000)) {
         float jumpPower = (g_highJumpTimer > 0.0f) ? g_highJumpPower : g_normalJumpPower;
+        SoundManager::PlayCoin();
         g_playerVel.y = jumpPower;
         g_playerGrounded = false;
         g_timeSinceGrounded = 0.3f;
-        PlayMidiNote(9, (g_highJumpTimer > 0.0f) ? 75 : 60, 110);
+        SoundManager::PlayMidiNote(9, (g_highJumpTimer > 0.0f) ? 75 : 60, 110);
     }
 
     if ((int)g_playerPos.z > g_jumpScore) {
@@ -746,7 +739,8 @@ void UpdateJumpGame(float dt) {
 
     if (g_playerPos.y < -12.0f) {
         g_isJumpGameOver = true;
-        PlayMidiNote(0, 36, 120);
+        SoundManager::PlayMidiNote(0, 36, 120);
+        SoundManager::PlayExplosion();
     }
 }
 
@@ -776,14 +770,14 @@ void HandleMouseClick(int x, int y) {
         if (x >= 362 && x <= 662 && y >= 480 && y <= 540) {
             InitJumpGame();
             g_gameState = STATE_GAMEPLAY;
-            PlayMidiNote(0, 72, 100);
+            SoundManager::PlayMidiNote(0, 72, 100);
         }
         else if (x >= 362 && x <= 662 && y >= 570 && y <= 630) {
             g_gameState = STATE_TUNING;
-            PlayMidiNote(0, 80, 100);
+            SoundManager::PlayMidiNote(0, 80, 100);
         }
         else if (x >= 362 && x <= 662 && y >= 660 && y <= 720) {
-            PlayMidiNote(0, 50, 100);
+            SoundManager::PlayMidiNote(0, 50, 100);
             isForceEndRelay = true; // ⭐ 릴레이 강제 종료 신호 ON
             gameovercheck = true;
         }
@@ -791,7 +785,7 @@ void HandleMouseClick(int x, int y) {
     else if (g_gameState == STATE_TUNING) {
         if (x >= 362 && x <= 662 && y >= 665 && y <= 715) {
             g_gameState = STATE_TITLE;
-            PlayMidiNote(0, 70, 100);
+            SoundManager::PlayMidiNote(0, 70, 100);
             return;
         }
 
@@ -800,18 +794,18 @@ void HandleMouseClick(int x, int y) {
             if (x >= 680 && x <= 730 && y >= rowY && y <= rowY + 36) {
                 AdjustSelectedParameter(i, -1.0f);
                 g_selectedParam = i;
-                PlayMidiNote(0, 75, 90);
+                SoundManager::PlayMidiNote(0, 75, 90);
                 return;
             }
             if (x >= 740 && x <= 790 && y >= rowY && y <= rowY + 36) {
                 AdjustSelectedParameter(i, 1.0f);
                 g_selectedParam = i;
-                PlayMidiNote(0, 85, 90);
+                SoundManager::PlayMidiNote(0, 85, 90);
                 return;
             }
             if (x >= 105 && x <= 670 && y >= rowY && y <= rowY + 36) {
                 g_selectedParam = i;
-                PlayMidiNote(0, 80, 80);
+                SoundManager::PlayMidiNote(0, 80, 80);
                 return;
             }
         }
@@ -823,43 +817,43 @@ void ProcessInput(WPARAM key) {
         if (key == VK_RETURN) {
             InitJumpGame();
             g_gameState = STATE_GAMEPLAY;
-            PlayMidiNote(0, 72, 100);
+            SoundManager::PlayMidiNote(0, 72, 100);
         }
         return;
     }
 
     if (g_gameState == STATE_TUNING) {
-        if (key == VK_ESCAPE) {
+        /*if (key == VK_ESCAPE) {
             g_gameState = STATE_TITLE;
             return;
-        }
+        }*/
         if (key == VK_UP) {
             g_selectedParam = (g_selectedParam - 1 + PARAM_COUNT) % PARAM_COUNT;
-            PlayMidiNote(0, 80, 80);
+            SoundManager::PlayMidiNote(0, 80, 80);
             return;
         }
         if (key == VK_DOWN) {
             g_selectedParam = (g_selectedParam + 1) % PARAM_COUNT;
-            PlayMidiNote(0, 80, 80);
+            SoundManager::PlayMidiNote(0, 80, 80);
             return;
         }
         if (key == VK_LEFT) {
             AdjustSelectedParameter(g_selectedParam, -1.0f);
-            PlayMidiNote(0, 75, 90);
+            SoundManager::PlayMidiNote(0, 75, 90);
             return;
         }
         if (key == VK_RIGHT) {
             AdjustSelectedParameter(g_selectedParam, 1.0f);
-            PlayMidiNote(0, 85, 90);
+            SoundManager::PlayMidiNote(0, 85, 90);
             return;
         }
     }
 
     if (g_gameState == STATE_GAMEPLAY) {
-        if (key == VK_ESCAPE) {
+       /* if (key == VK_ESCAPE) {
             g_gameState = STATE_TITLE;
             return;
-        }
+        }*/
         if (g_isJumpGameOver && (key == VK_SPACE || key == VK_RETURN)) {
             gameovercheck = g_isJumpGameOver;
         }
@@ -1201,6 +1195,13 @@ bool InitUIResources() {
 // ==========================================
 
 void Init(HWND hWnd) {
+
+    gameovercheck = false;
+    isForceEndRelay = false;
+    g_gameState = STATE_TITLE;
+    g_isJumpGameOver = false;
+    g_jumpScore = 0;
+
     g_hWnd = hWnd;
     RECT rc; GetClientRect(hWnd, &rc);
     UINT width = rc.right - rc.left; UINT height = rc.bottom - rc.top;
@@ -1269,7 +1270,7 @@ void Init(HWND hWnd) {
 
     Create16x16IndexTexture();
     InitUIResources();
-    InitAudio();
+   
     InitTimer();
  /*   InitJumpGame();
     g_gameState = STATE_GAMEPLAY;*/
@@ -1690,7 +1691,7 @@ void Draw() {
 }
 
 void Release() {
-    if (g_hMidi) { midiOutReset(g_hMidi); midiOutClose(g_hMidi); }
+
     if (g_hFontTitle) DeleteObject(g_hFontTitle);
     if (g_hFontBig) DeleteObject(g_hFontBig);
     if (g_hFontMed) DeleteObject(g_hFontMed);

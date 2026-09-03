@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <fstream>
 #include <cassert>
+#include "SoundManager.h"
 
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "gdi32.lib")
@@ -131,21 +132,12 @@ struct RankEntry {
 // ============================================================================
 // [SYSTEM] 사운드 및 세이브/로드 시스템
 // ============================================================================
-HMIDIOUT hMidi = NULL;
+
 bool gameoverchecker = false;
-void InitMIDI() {
-    midiOutOpen(&hMidi, 0, 0, 0, CALLBACK_NULL);
-}
 
-void PlayBeepSound(int note, int durationMs = 100) {
-    if (!hMidi) return;
-    DWORD msg = 0x00400090 | (note << 8);
-    midiOutShortMsg(hMidi, msg);
-}
 
-void CloseMIDI() {
-    if (hMidi) midiOutClose(hMidi);
-}
+
+
 
 float g_HighScore = 0.0f;
 std::vector<RankEntry> g_RankList;
@@ -783,7 +775,7 @@ public:
             hasShield = false;
             shieldTimer = 0.0f;
             invincibleTimer = 1.2f;
-            PlayBeepSound(115, 180);
+            SoundManager::PlayRetroBeep(115, 180);
             TriggerShake(3.0f, 0.2f);
             SpawnItemPickupParticles(player.x, player.y, 2);
             return false;
@@ -796,7 +788,7 @@ public:
             deathStartY = player.y;
             deathSplitSoundPlayed = false;
 
-            PlayBeepSound(36, 400);
+            SoundManager::PlayRetroBeep(36, 400);
             TriggerShake(3.0f, 0.25f);
         }
         return true;
@@ -1063,7 +1055,7 @@ void RankScene::Draw() {
 void RankScene::OnKeyDown(WPARAM wParam) {
     if (wParam == VK_ESCAPE || wParam == VK_SPACE) {
         SceneManager::GetInstance().ChangeScene((IGameScene*)new TitleScene());
-        PlayBeepSound(70, 80);
+        SoundManager::PlayRetroBeep(70, 80);
     }
     else if (wParam == VK_UP) {
         scrollOffset = (std::max)(0, scrollOffset - 20);
@@ -1078,7 +1070,7 @@ void RankScene::OnKeyDown(WPARAM wParam) {
 void RankScene::OnLButtonDown(int mx, int my) {
     if (mx >= 150 && mx <= 250 && my >= 200 && my <= 220) {
         SceneManager::GetInstance().ChangeScene((IGameScene*)new TitleScene());
-        PlayBeepSound(70, 80);
+        SoundManager::PlayRetroBeep(70, 80);
     }
 }
 
@@ -1127,17 +1119,19 @@ void TitleScene::OnKeyDown(WPARAM wParam) {
         if (g_MouseX >= 100 && g_MouseX <= 300 && g_MouseY >= CY + 50 && g_MouseY <= CY + 80) {
             isForceEndRelay = true;
             gameoverchecker = true;
+            SoundManager::StopBGM();
+            SoundManager::PlayFanfare_2();
         }
         else {
             // 그 외에는 정상적으로 게임 A 플레이 시작!
             SceneManager::GetInstance().ChangeScene((IGameScene*)new PlayScene());
-            PlayBeepSound(90, 80);
+            SoundManager::PlayRetroBeep(90, 80);
         }
     }
 }
 void TitleScene::OnLButtonDown(int mx, int my) {
     float CY = VIRTUAL_HEIGHT / 2.0f;
-    if (mx >= 125 && mx <= 275 && my >= CY + 10 && my <= CY + 35) { SceneManager::GetInstance().ChangeScene((IGameScene*)new PlayScene()); PlayBeepSound(90, 80); }
+    if (mx >= 125 && mx <= 275 && my >= CY + 10 && my <= CY + 35) { SceneManager::GetInstance().ChangeScene((IGameScene*)new PlayScene()); SoundManager::PlayRetroBeep(90, 80); }
     else if (mx >= 125 && mx <= 275 && my >= CY + 45 && my <= CY + 70) { isForceEndRelay = true; gameoverchecker = true; } // END RELAY
 }
 
@@ -1209,7 +1203,7 @@ void PlayScene::Update() {
             player.x = centerX; player.y = centerY;
             if (!deathSplitSoundPlayed) {
                 deathSplitSoundPlayed = true;
-                PlayBeepSound(28, 500);
+                SoundManager::PlayRetroBeep(28, 500);
                 TriggerShake(5.0f, 0.3f);
             }
         }
@@ -1340,7 +1334,7 @@ void PlayScene::Update() {
                 gp.state = GIANT_EXTENDING;
                 gp.timer = 0.35f;
                 gp.currentLength = -250.0f;
-                PlayBeepSound(40, 250);
+                SoundManager::PlayRetroBeep(40, 250);
                 TriggerShake(4.0f, 0.35f);
             }
         }
@@ -1356,7 +1350,7 @@ void PlayScene::Update() {
                     gp.timer = 5.5f;
                     TriggerShake(7.0f, 0.3f);
                     SpawnPillarParticles(centerX, centerY, 20);
-                    PlayBeepSound(32, 300);
+                    SoundManager::PlayRetroBeep(32, 300);
                 }
             }
             else {
@@ -1467,7 +1461,7 @@ void PlayScene::Update() {
             pillar.timer -= dt;
             if (pillar.timer <= 0.0f) {
                 pillar.isWarning = false; pillar.isActive = true;
-                PlayBeepSound(52, 100); TriggerShake(3.0f, 0.2f);
+                SoundManager::PlayRetroBeep(52, 100); TriggerShake(3.0f, 0.2f);
                 float cx = (pillar.box.minX + pillar.box.maxX) / 2.0f;
                 float cy = (pillar.box.minY + pillar.box.maxY) / 2.0f;
                 SpawnPillarParticles(cx, cy, 8);
@@ -1518,7 +1512,7 @@ void PlayScene::Update() {
         if (starItem.life <= 0.0f) starItem.active = false;
         else if (CheckPlayerVsCircle(player, starItem.x, starItem.y, starItem.radius)) {
             starItem.active = false; sightBonus = 150.0f;
-            PlayBeepSound(100, 150); TriggerShake(2.0f, 0.1f);
+            SoundManager::PlayRetroBeep(100, 150); TriggerShake(2.0f, 0.1f);
             SpawnItemPickupParticles(starItem.x, starItem.y, 0);
         }
     }
@@ -1564,7 +1558,7 @@ void PlayScene::Update() {
         if (swordItem.life <= 0.0f) swordItem.active = false;
         else if (CheckPlayerVsCircle(player, swordItem.x, swordItem.y, swordItem.radius)) {
             swordItem.active = false;
-            PlayBeepSound(110, 150); TriggerShake(3.0f, 0.15f);
+            SoundManager::PlayRetroBeep(110, 150); TriggerShake(3.0f, 0.15f);
             SpawnItemPickupParticles(swordItem.x, swordItem.y, 1);
 
             if (!enemies.empty()) {
@@ -1616,7 +1610,7 @@ void PlayScene::Update() {
         if (shieldItem.life <= 0.0f) shieldItem.active = false;
         else if (CheckPlayerVsCircle(player, shieldItem.x, shieldItem.y, shieldItem.radius)) {
             shieldItem.active = false; hasShield = true; shieldTimer = 15.0f;
-            PlayBeepSound(105, 160); TriggerShake(2.0f, 0.12f);
+            SoundManager::PlayRetroBeep(105, 160); TriggerShake(2.0f, 0.12f);
             SpawnItemPickupParticles(shieldItem.x, shieldItem.y, 2);
         }
     }
@@ -1638,7 +1632,7 @@ void PlayScene::Update() {
             if (len > 0) {
                 enemies[idx].targetDirX = dx / len; enemies[idx].targetDirY = dy / len;
             }
-            PlayBeepSound(80, 100);
+            SoundManager::PlayRetroBeep(80, 100);
         }
         targetLockTimer = 10.0f;
     }
@@ -1688,7 +1682,7 @@ void PlayScene::Update() {
                 enemy.isTargeting = false;
                 enemy.vx = enemy.targetDirX * 60.0f;
                 enemy.vy = enemy.targetDirY * 60.0f;
-                PlayBeepSound(72, 150);
+                SoundManager::PlayRetroBeep(72, 150);
             }
         }
         else if (enemy.type == ENEMY_HEXAGON) {
@@ -1698,7 +1692,7 @@ void PlayScene::Update() {
                 enemy.explosionTimer = 1.2f;
                 enemy.savedVx = enemy.vx; enemy.savedVy = enemy.vy;
                 enemy.vx = 0.0f; enemy.vy = 0.0f;
-                PlayBeepSound(90, 100);
+                SoundManager::PlayRetroBeep(90, 100);
             }
 
             if (enemy.isPreparingExplosion) {
@@ -1709,7 +1703,7 @@ void PlayScene::Update() {
                     float explosionRadius = enemy.radius * 5.0f;
                     if (CheckPlayerVsCircle(player, enemy.x, enemy.y, explosionRadius)) TryKillPlayer();
 
-                    PlayBeepSound(45, 200); TriggerShake(5.0f, 0.25f);
+                    SoundManager::PlayRetroBeep(45, 200); TriggerShake(5.0f, 0.25f);
                     SpawnHexExplosionParticles(enemy.x, enemy.y);
 
                     float newAngle = (float)(rand() % 360) * 3.14159f / 180.0f;
@@ -1733,7 +1727,7 @@ void PlayScene::Update() {
             enemy.shootTimer -= effectiveDt;
 
             if (enemy.shootTimer <= 0.0f) {
-                enemy.shootTimer = 2.5f; PlayBeepSound(85, 60);
+                enemy.shootTimer = 2.5f; SoundManager::PlayRetroBeep(85, 60);
 
                 for (int i = 0; i < 3; ++i) {
                     float vAngle = enemy.angle + (i * 120.0f * 3.14159265f / 180.0f);
@@ -1860,7 +1854,7 @@ void PlayScene::Update() {
             for (auto& pillar : pillars) {
                 if (pillar.isActive) {
                     if (HandleEnemyVsAABB(enemy, pillar.box)) {
-                        pillar.hp--; PlayBeepSound(60, 50);
+                        pillar.hp--; SoundManager::PlayRetroBeep(60, 50);
                     }
                 }
             }
@@ -2394,19 +2388,19 @@ void PlayScene::OnKeyDown(WPARAM wParam) {
             else {
                 playerInitial[2] = (char)wParam;
             }
-            PlayBeepSound(100, 50);
+            SoundManager::PlayRetroBeep(100, 50);
         }
         else if (wParam == VK_BACK) {
             if (!playerInitial.empty()) {
                 playerInitial.pop_back();
-                PlayBeepSound(60, 50);
+                SoundManager::PlayRetroBeep(60, 50);
             }
         }
         else if (wParam == VK_RETURN) {
             if (playerInitial.empty()) playerInitial = "AAA";
             AddRank(playerInitial, (int)survivalTime);
             state = PLAY_STATE_GAMEOVER;
-            PlayBeepSound(90, 80);
+            SoundManager::PlayRetroBeep(90, 80);
         }
         return;
     }
@@ -2414,24 +2408,24 @@ void PlayScene::OnKeyDown(WPARAM wParam) {
     if (wParam == VK_ESCAPE) {
         if (state == PLAY_STATE_RUNNING) {
             state = PLAY_STATE_PAUSED;
-            PlayBeepSound(75, 80);
+            SoundManager::PlayRetroBeep(75, 80);
         }
         else if (state == PLAY_STATE_PAUSED) {
             state = PLAY_STATE_RUNNING;
-            PlayBeepSound(90, 80);
+            SoundManager::PlayRetroBeep(90, 80);
         }
     }
     else if (wParam == VK_SPACE) {
         if (state == PLAY_STATE_GAMEOVER) {
             SceneManager::GetInstance().ChangeScene((IGameScene*)new TitleScene());
-            PlayBeepSound(70, 80);
+            SoundManager::PlayRetroBeep(70, 80);
         }
         else if (state == PLAY_STATE_RUNNING) {
             if (player.dashCooldown <= 0.0f) {
                 player.isDashing = true;
                 player.dashDuration = 0.18f;
                 player.dashCooldown = 1.2f;
-                PlayBeepSound(90, 80);
+                SoundManager::PlayRetroBeep(90, 80);
                 TriggerShake(2.0f, 0.15f);
             }
         }
@@ -2442,7 +2436,7 @@ void PlayScene::OnLButtonDown(int mx, int my) {
     if (state == PLAY_STATE_PAUSED) {
         if (mx >= 125 && mx <= 275 && my >= 100 && my <= 125) {
             state = PLAY_STATE_RUNNING;
-            PlayBeepSound(90, 80);
+            SoundManager::PlayRetroBeep(90, 80);
         }
         else if (mx >= 125 && mx <= 275 && my >= 132 && my <= 157) {
            
@@ -2497,14 +2491,12 @@ namespace GameA {
     void Init(HWND hWnd) {
         gameoverchecker = false;
         g_hWndA = hWnd;
-        InitMIDI();
       
         SceneManager::GetInstance().ChangeScene(new TitleScene());
     }
 
     void Release() {
         SceneManager::GetInstance().ChangeScene(nullptr);
-        CloseMIDI();
     }
 
     void Update() {

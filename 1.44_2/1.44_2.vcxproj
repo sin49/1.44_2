@@ -74,7 +74,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_HAS_STD_BYTE=0</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -92,7 +92,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_HAS_STD_BYTE=0</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_HAS_STD_BYTE=0</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -126,7 +126,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_HAS_STD_BYTE=0</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -140,10 +140,37 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AutoBattleGame_.cpp" />
-    <ClCompile Include="BadukShooting.cpp" />
+    <ClCompile Include="BadukShooting.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="DrawManager.cpp" />
     <ClCompile Include="INVEMA_.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\Colliders.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\CollisionCheck.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\ColorBrush.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\ColorBrushPalettet.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\DebugHelper.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\Driect2DFramework.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\GameObject.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\Image.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\InputManager.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\Matrix3.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\Matrix3x3.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\SingletonRenderTarget.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\Time.cpp" />
+    <ClCompile Include="MoreApple\DX2DClasses\Vector2.cpp" />
+    <ClCompile Include="MoreApple\MoreApple.cpp" />
+    <ClCompile Include="MoreApple\source\Basket.cpp" />
+    <ClCompile Include="MoreApple\source\Fruit.cpp" />
+    <ClCompile Include="MoreApple\source\FruitManager.cpp" />
+    <ClCompile Include="MoreApple\source\GameScene.cpp" />
+    <ClCompile Include="MoreApple\source\Player.cpp" />
+    <ClCompile Include="MoreApple\source\SoundManager.cpp" />
+    <ClCompile Include="MoreApple\stdafx.cpp" />
     <ClCompile Include="RobotJump.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
@@ -153,6 +180,33 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DrawManager.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Colliders.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\CollisionCheck.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\ColorBrush.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\ColorBrushPalettet.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\DebugHelper.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Driect2DFramework.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\GameObject.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Image.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\InputManager.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Matrix3.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Matrix3x3.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Rect.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Rigidbody.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\SceneManager.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\SingletonRenderTarget.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Time.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\UtilityDefine.h" />
+    <ClInclude Include="MoreApple\DX2DClasses\Vector2.h" />
+    <ClInclude Include="MoreApple\MoreApple.h" />
+    <ClInclude Include="MoreApple\source\Basket.h" />
+    <ClInclude Include="MoreApple\source\Fruit.h" />
+    <ClInclude Include="MoreApple\source\FruitManager.h" />
+    <ClInclude Include="MoreApple\source\GameScene.h" />
+    <ClInclude Include="MoreApple\source\Player.h" />
+    <ClInclude Include="MoreApple\source\SoundManager.h" />
+    <ClInclude Include="MoreApple\stdafx.h" />
+    <ClInclude Include="MoreApple\targetver.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="SoundManager.h" />
