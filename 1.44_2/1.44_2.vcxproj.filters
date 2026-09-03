@@ -17,7 +17,13 @@
       <UniqueIdentifier>{ac5b377c-acb8-4294-9499-826326c6023d}</UniqueIdentifier>
     </Filter>
     <Filter Include="GameE%29Apple">
-      <UniqueIdentifier>{6688da6b-42f7-4fb0-bef4-1671d030a16a}</UniqueIdentifier>
+      <UniqueIdentifier>{c1b57b85-1219-4b84-9481-f0e01174025b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameE%29Apple\Dx2FrameWork">
+      <UniqueIdentifier>{84e02b8f-0b74-4a73-b2d1-37d3513abf36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameE%29Apple\Source">
+      <UniqueIdentifier>{68fb647c-f52e-4e06-af40-585e65e8e973}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +60,72 @@
     <ClCompile Include="main.cpp">
       <Filter>FrameWork</Filter>
     </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\SingletonRenderTarget.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\Time.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\Vector2.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\Colliders.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\CollisionCheck.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\ColorBrush.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\ColorBrushPalettet.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\DebugHelper.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\Driect2DFramework.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\GameObject.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\Image.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\InputManager.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\Matrix3.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\DX2DClasses\Matrix3x3.cpp">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\source\SoundManager.cpp">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\source\Basket.cpp">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\source\Fruit.cpp">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\source\FruitManager.cpp">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\source\GameScene.cpp">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\source\Player.cpp">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\MoreApple.cpp">
+      <Filter>GameE%29Apple</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreApple\stdafx.cpp">
+      <Filter>GameE%29Apple</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SoundManager.h">
@@ -67,6 +139,87 @@
     </ClInclude>
     <ClInclude Include="DrawManager.h">
       <Filter>FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\SingletonRenderTarget.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Time.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\UtilityDefine.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Vector2.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Colliders.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\CollisionCheck.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\ColorBrush.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\ColorBrushPalettet.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\DebugHelper.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Driect2DFramework.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\GameObject.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Image.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\InputManager.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Matrix3.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Matrix3x3.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Rect.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\Rigidbody.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\DX2DClasses\SceneManager.h">
+      <Filter>GameE%29Apple\Dx2FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\source\Player.h">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\source\SoundManager.h">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\source\Basket.h">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\source\Fruit.h">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\source\FruitManager.h">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\source\GameScene.h">
+      <Filter>GameE%29Apple\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\targetver.h">
+      <Filter>GameE%29Apple</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\MoreApple.h">
+      <Filter>GameE%29Apple</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreApple\stdafx.h">
+      <Filter>GameE%29Apple</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

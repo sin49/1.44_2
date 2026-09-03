@@ -67,12 +67,12 @@ namespace ScoreManager
 
         return g_topRankings[idx][rank];
     }
-    int g_currentRunScores[4] = { 0, 0, 0, 0 };
+    int g_currentRunScores[5] = { 0, 0, 0, 0, 0 };
 
     // 각 게임이 끝날 때마다 점수를 임시 보관
     void RecordCurrentGameScore(GameType game, int score) {
         int idx = (int)game;
-        if (idx >= 0 && idx < 4) {
+        if (idx >= 0 && idx < 5) {
             g_currentRunScores[idx] = score;
         }
     }
@@ -80,7 +80,7 @@ namespace ScoreManager
     // 게임 D까지 모두 끝나면 총점을 합산하고 랭킹을 갱신
     void FinalizeRelayAndSave(const char* initial) {
         int totalScore = 0;
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 5; ++i) {
             totalScore += g_currentRunScores[i];
             // 개별 게임 랭킹도 갱신
             AddScore((GameType)i, g_currentRunScores[i], initial);

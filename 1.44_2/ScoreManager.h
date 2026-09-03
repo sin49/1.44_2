@@ -6,6 +6,7 @@ namespace ScoreManager
         GameB,
         GameC,
         GameD,
+        GameE,
         Total,
         MaxCount
     };
@@ -15,7 +16,7 @@ namespace ScoreManager
         int score;
     };
 
-    extern int g_currentRunScores[4];
+    extern int g_currentRunScores[5];
 
     void Initialize();
     void AddScore(GameType game, int newScore, const char* initial);

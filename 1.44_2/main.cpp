@@ -86,16 +86,16 @@ void Initialize(HWND hWnd)
 		DrawManager::InitializeDraw(g_pRenderTarget);
 
 
-
 		// 1. 사운드 시스템 켜기
 		SoundManager::Initialize();
+	
 
 		// 2. 씬 매니저 초기화
 		SceneManager::Initialize(hWnd);
 
 		ScoreManager::Initialize();
 		
-		GameA::Init(hWnd);
+
 
 		// 3. 60프레임 타이머 가동
 		SetTimer(hWnd, 1, 16, NULL); // 대략 60프레임 (16ms)
@@ -116,8 +116,9 @@ void Update()
 void Draw() {
 	// 1. 레트로 서바(GameA)는 GDI 방식이므로 Direct2D 밖에서 단독 호출!
 	if (SceneManager::GetCurrentScene() == SceneManager::SceneType::GameA ||
-		SceneManager::GetCurrentScene() == SceneManager::SceneType::GameB || // ⭐ GameB 추가!
-		SceneManager::GetCurrentScene() == SceneManager::SceneType::GameC) {
+		SceneManager::GetCurrentScene() == SceneManager::SceneType::GameB ||
+		SceneManager::GetCurrentScene() == SceneManager::SceneType::GameC ||
+		SceneManager::GetCurrentScene() == SceneManager::SceneType::GameE) { 
 		SceneManager::Draw();
 	}
 	// 2. 타이틀, 셋팅 등 프레임워크 씬들은 Direct2D 방식으로 호출!
@@ -194,7 +195,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 // ==========================================
 namespace NameInputScene {
 	char initials[4] = "___"; int currentIndex = 0;
-	void Init() { strcpy_s(initials, "___"); currentIndex = 0; }
+	void Init() { strcpy_s(initials, "___"); currentIndex = 0; SoundManager::PlayFanfare_0();
+	}
 	void Update() {} void Release() {}
 	void Draw() {
 		DrawManager::FillRect(0, 0, 1280, 720, D2D1::ColorF::Black);
@@ -223,6 +225,7 @@ namespace RankingScene {
 	void Draw() {
 		DrawManager::FillRect(0, 0, 1280, 720, D2D1::ColorF(0.05f, 0.05f, 0.1f));
 		DrawManager::DrawWhiteText(450, 50, 400, 40, L" TOTAL RANKING ", 35.0f, D2D1::ColorF::Gold);
+
 		for (int i = 0; i < 3; i++) {
 			auto entry = ScoreManager::GetScore(ScoreManager::GameType::Total, i);
 			wchar_t buf[64]; swprintf_s(buf, 64, L"%d. %S - %d", i + 1, entry.initial, entry.score);
@@ -230,16 +233,19 @@ namespace RankingScene {
 		}
 
 		auto DrawSubRank = [](float x, float y, const wchar_t* title, ScoreManager::GameType type) {
-			DrawManager::DrawWhiteText(x, y, 300, 30, title, 20.0f, D2D1::ColorF::Cyan);
+			DrawManager::DrawWhiteText(x, y, 280, 30, title, 18.0f, D2D1::ColorF::Cyan);
 			for (int i = 0; i < 3; i++) {
 				auto entry = ScoreManager::GetScore(type, i);
 				wchar_t buf[64]; swprintf_s(buf, 64, L"%d. %S : %d", i + 1, entry.initial, entry.score);
-				DrawManager::DrawWhiteText(x, y + 40 + i * 30, 300, 30, buf, 18.0f, D2D1::ColorF::LightGray);
+				DrawManager::DrawWhiteText(x, y + 40 + i * 30, 280, 30, buf, 16.0f, D2D1::ColorF::LightGray);
 			}
 		};
-		DrawSubRank(200, 350, L"[ GAME A: SURVIVAL ]", ScoreManager::GameType::GameA);
-		DrawSubRank(550, 350, L"[ GAME C: JUMP ]", ScoreManager::GameType::GameC);
-		DrawSubRank(900, 350, L"[ GAME D: SHOOTER ]", ScoreManager::GameType::GameD);
+
+		// ⭐ 1280 해상도에 맞춰 4개 게임 간격 재배치 (x좌표: 80, 380, 680, 980)
+		DrawSubRank(80, 350, L"[ GAME A: SURVIVAL ]", ScoreManager::GameType::GameA);
+		DrawSubRank(380, 350, L"[ GAME C: JUMP ]", ScoreManager::GameType::GameC);
+		DrawSubRank(680, 350, L"[ GAME D: SHOOTER ]", ScoreManager::GameType::GameD);
+		DrawSubRank(980, 350, L"[ GAME E: APPLE ]", ScoreManager::GameType::GameE);
 
 		// 복귀 버튼
 		DrawManager::FillRect(440, 630, 400, 50, D2D1::ColorF(0.2f, 0.2f, 0.3f));
