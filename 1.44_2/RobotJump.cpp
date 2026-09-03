@@ -1,4 +1,4 @@
-﻿#include <windows.h>
+#include <windows.h>
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <directxmath.h>
@@ -808,6 +808,11 @@ void HandleMouseClick(int x, int y) {
                 SoundManager::PlayMidiNote(0, 80, 80);
                 return;
             }
+        }
+    }
+    else if (g_gameState == STATE_GAMEPLAY) {
+        if (g_isJumpGameOver) {
+            gameovercheck = true;
         }
     }
 }
@@ -1710,12 +1715,7 @@ void InputKey(WPARAM wParam) {
     ProcessInput(wParam); // 로봇 점프 내부의 키보드 처리 함수 호출
 }
 void InputMouseClick(int mx, int my) {
-    int mappedX = (mx * 1024) / 1280;
-    int mappedY = (my * 768) / 720;
-    HandleMouseClick(mappedX, mappedY); // 로봇 점프 내부의 마우스 클릭 함수 호출
-    if (g_gameState == STATE_TITLE && mappedX >= 362 && mappedX <= 662 && mappedY >= 570 && mappedY <= 630) {
-        gameovercheck = true;
-    }
+    HandleMouseClick(mx, my); // 로봇 점프 내부의 마우스 클릭 함수 호출 (1024x768 1:1 전달)
 }
 void InputMouseMove(int mx, int my) {
     // 로봇 점프는 클릭만 사용하므로 비워둬도 됨

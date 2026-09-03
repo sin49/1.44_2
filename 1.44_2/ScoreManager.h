@@ -23,6 +23,7 @@ namespace ScoreManager
     ScoreEntry GetScore(GameType game, int rank);
     void SaveScores();
 
+    void ResetCurrentScores();
     void RecordCurrentGameScore(GameType game, int score);
     void FinalizeRelayAndSave(const char* initial);
 }

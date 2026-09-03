@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "DrawManager.h"
 #include "SoundManager.h"
+#include "ScoreManager.h"
 #include <windows.h>
 
 using namespace DrawManager;
@@ -48,7 +49,10 @@ namespace TitleScene
 
     void ExecuteCommand(int idx) {
         SoundManager::PlayCoin();
-        if (idx == 0) SceneManager::ChangeScene(SceneManager::SceneType::GameA);
+        if (idx == 0) {
+            ScoreManager::ResetCurrentScores();
+            SceneManager::ChangeScene(SceneManager::SceneType::GameA);
+        }
         else if (idx == 1) SceneManager::ChangeScene(SceneManager::SceneType::GameB);
         else if (idx == 2) SceneManager::ChangeScene(SceneManager::SceneType::Ranking);
         else if (idx == 3) SceneManager::ChangeScene(SceneManager::SceneType::Settings);
@@ -57,7 +61,7 @@ namespace TitleScene
 
     // ⭐ 스페이스 꾹 누름을 방지하기 위해 단발성 이벤트인 InputKey에서 처리!
     void InputKey(WPARAM wParam) {
-        if (wParam == VK_SPACE) { SoundManager::PlayCoin(); ExecuteCommand(selectedBtn); }
+        if (wParam == VK_SPACE) { ExecuteCommand(selectedBtn); }
     }
 
     void InputMouseMove(int mx, int my) {
@@ -71,7 +75,7 @@ namespace TitleScene
     }
 
     void InputMouseClick(int mx, int my) {
-        if (hoverBtn != -1) { SoundManager::PlayCoin(); ExecuteCommand(hoverBtn); }
+        if (hoverBtn != -1) { ExecuteCommand(hoverBtn); }
     }
     void Release() {}
 }

@@ -1,7 +1,9 @@
 #include "SoundManager.h"
+#include <mutex>
 
 // 미디 출력
 HMIDIOUT g_hMidiOut = nullptr;
+std::recursive_mutex g_midiMutex;
 
 using namespace std;
 
@@ -20,11 +22,15 @@ void UpdateBGMVolume() {
 }
 
 void SetInstrument(uint8_t channel, uint8_t instrument) {
+    std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
+    if (!g_hMidiOut) return;
     DWORD msg = (0xC0 | (channel & 0x0F)) | (instrument << 8);
     midiOutShortMsg(g_hMidiOut, msg);
 }
 
 void NoteOn(uint8_t channel, uint8_t note, uint8_t velocity = 127) {
+    std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
+    if (!g_hMidiOut) return;
     uint8_t finalVelocity = (uint8_t)(velocity * g_masterVolume * g_sfxVolume);
 
     if (finalVelocity > 127) finalVelocity = 127;
@@ -33,11 +39,15 @@ void NoteOn(uint8_t channel, uint8_t note, uint8_t velocity = 127) {
 }
 
 void NoteOff(uint8_t channel, uint8_t note) {
+    std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
+    if (!g_hMidiOut) return;
     DWORD msg = (0x80 | (channel & 0x0F)) | (note << 8);
     midiOutShortMsg(g_hMidiOut, msg);
 }
 
 void PitchBend(uint8_t channel, uint16_t bendValue) {
+    std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
+    if (!g_hMidiOut) return;
     uint8_t lsb = bendValue & 0x7F;
     uint8_t msb = (bendValue >> 7) & 0x7F;
     DWORD msg = (0xE0 | (channel & 0x0F)) | (lsb << 8) | (msb << 16);
@@ -72,6 +82,7 @@ namespace SoundManager {
 
     void Release()
     {
+        std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
         if (g_hMidiOut != nullptr)
         {
             midiOutClose(g_hMidiOut); // 장치 닫기
@@ -81,6 +92,7 @@ namespace SoundManager {
 
     void PlayNote(int instrument, int note)
     {
+        std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
         if (g_hMidiOut == nullptr) return;
 
         DWORD instrumentMsg = 0xC0 | (instrument << 8);
@@ -140,6 +152,7 @@ namespace SoundManager {
 
     // [Game C & B] 공용 미디 노트 재생
     void PlayMidiNote(BYTE channel, BYTE note, BYTE velocity, float volumeMultiplier) {
+        std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
         if (!g_hMidiOut) return;
         uint8_t finalVel = (uint8_t)(velocity * g_masterVolume * g_sfxVolume * volumeMultiplier);
         if (finalVel > 127) finalVel = 127;
@@ -150,6 +163,7 @@ namespace SoundManager {
 
     // [Game A] 레트로 삐비빅 사운드
     void PlayRetroBeep(int note, int durationMs) {
+        std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
         if (!g_hMidiOut) return;
         DWORD msg = 0x00400090 | (note << 8);
         midiOutShortMsg(g_hMidiOut, msg);
@@ -157,6 +171,7 @@ namespace SoundManager {
 
     // [Game C] 로봇 점프 BGM 재생용
     void PlayJumpBGMNote(BYTE channel, BYTE note, BYTE velocity) {
+        std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
         if (!g_hMidiOut) return;
         DWORD msg = (velocity << 16) | (note << 8) | (0x90 | (channel & 0x0F));
         midiOutShortMsg(g_hMidiOut, msg);
@@ -164,12 +179,14 @@ namespace SoundManager {
 
     // [Game D] 바둑 슈팅 특수음
     void PlayShootSFX() {
+        std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
         if (!g_hMidiOut) return;
         DWORD msg = (0x90 | 9) | (75 << 8) | (120 << 16);
         midiOutShortMsg(g_hMidiOut, msg);
     }
 
     void PlayHitSFX(int combo) {
+        std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
         if (!g_hMidiOut) return;
         uint8_t note = (uint8_t)(min)(72 + (combo * 2), 96);
         DWORD msg = (0x90 | 1) | (note << 8) | (127 << 16);
@@ -183,11 +200,165 @@ namespace SoundManager {
             uint8_t note = 76;
             SetInstrument(ch, 80);
             PitchBend(ch, 8192);
-            DWORD onMsg = (0x90 | ch) | (note << 8) | (100 << 16);
-            midiOutShortMsg(g_hMidiOut, onMsg);
+            {
+                std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
+                if (!g_hMidiOut) return;
+                DWORD onMsg = (0x90 | ch) | (note << 8) | (100 << 16);
+                midiOutShortMsg(g_hMidiOut, onMsg);
+            }
             for (int bend = 8192; bend >= 0; bend -= 800) { PitchBend(ch, bend); Sleep(10); }
-            DWORD offMsg = (0x80 | ch) | (note << 8) | (0 << 16);
-            midiOutShortMsg(g_hMidiOut, offMsg);
+            {
+                std::lock_guard<std::recursive_mutex> lock(g_midiMutex);
+                if (!g_hMidiOut) return;
+                DWORD offMsg = (0x80 | ch) | (note << 8) | (0 << 16);
+                midiOutShortMsg(g_hMidiOut, offMsg);
+            }
+            PitchBend(ch, 8192);
+        }).detach();
+    }
+
+    // ==========================================================
+    // [Game A: INVEMA 전용 풍성한 미디 사운드 구현부]
+    // ==========================================================
+    void PlayInvemaLaser() {
+        if (!g_hMidiOut) return;
+        thread([]() {
+            const uint8_t ch = 4;
+            SetInstrument(ch, 81); // Sawtooth Synth Lead
+            PitchBend(ch, 13000);
+            NoteOn(ch, 79, 120);
+            for (int b = 13000; b >= 5000; b -= 1600) {
+                PitchBend(ch, b);
+                Sleep(8);
+            }
+            NoteOff(ch, 79);
+            PitchBend(ch, 8192);
+        }).detach();
+    }
+
+    void PlayInvemaBulletHit() {
+        if (!g_hMidiOut) return;
+        static DWORD lastHit = 0;
+        DWORD now = GetTickCount();
+        if (now - lastHit < 30) return; // 짧은 디바운스로 동시 다발적 연타 방지
+        lastHit = now;
+        NoteOn(9, 75, 85); // Claves (경쾌하고 찰진 타격음)
+    }
+
+    void PlayInvemaEnemyBounce() {
+        if (!g_hMidiOut) return;
+        static DWORD lastBounce = 0;
+        DWORD now = GetTickCount();
+        if (now - lastBounce < 60) return;
+        lastBounce = now;
+        NoteOn(9, 76, 80); // Hi Wood Block (통통 튕기는 충돌음)
+    }
+
+    void PlayInvemaPillarHit() {
+        if (!g_hMidiOut) return;
+        static DWORD lastPillar = 0;
+        DWORD now = GetTickCount();
+        if (now - lastPillar < 40) return;
+        lastPillar = now;
+        NoteOn(9, 66, 110); // Low Timbale (묵직한 벽 충돌)
+        NoteOn(9, 38, 90);  // Acoustic Snare
+    }
+
+    void PlayInvemaDash() {
+        if (!g_hMidiOut) return;
+        thread([]() {
+            const uint8_t ch = 2;
+            SetInstrument(ch, 55); // Orchestra Hit
+            NoteOn(ch, 64, 110);
+            NoteOn(9, 39, 100);    // Hand Clap (부스터 바람 가르는 소리)
+            Sleep(80);
+            NoteOff(ch, 64);
+        }).detach();
+    }
+
+    void PlayInvemaSwordSlash() {
+        if (!g_hMidiOut) return;
+        thread([]() {
+            const uint8_t ch = 2;
+            SetInstrument(ch, 55); // Orchestra Hit
+            NoteOn(ch, 60, 127);
+            NoteOn(9, 40, 127);    // Electric Snare
+            NoteOn(9, 49, 120);    // Crash Cymbal
+            Sleep(150);
+            NoteOff(ch, 60);
+        }).detach();
+    }
+
+    void PlayInvemaShieldDeflect() {
+        if (!g_hMidiOut) return;
+        thread([]() {
+            const uint8_t ch = 6;
+            SetInstrument(ch, 14); // Tubular Bells (금속성 튕겨내기)
+            NoteOn(ch, 84, 127);
+            NoteOn(9, 81, 120);    // Open Triangle
+            Sleep(250);
+            NoteOff(ch, 84);
+        }).detach();
+    }
+
+    void PlayInvemaItemStar() {
+        if (!g_hMidiOut) return;
+        thread([]() {
+            const uint8_t ch = 7;
+            SetInstrument(ch, 9); // Glockenspiel (반짝이는 크리스탈 획득음)
+            int notes[] = { 72, 76, 79, 84, 88 };
+            for (int n : notes) {
+                NoteOn(ch, n, 115);
+                Sleep(45);
+                NoteOff(ch, n);
+            }
+        }).detach();
+    }
+
+    void PlayInvemaItemShield() {
+        if (!g_hMidiOut) return;
+        thread([]() {
+            const uint8_t ch = 7;
+            SetInstrument(ch, 88); // Warm Synth Pad
+            int notes[] = { 60, 65, 69, 72 };
+            for (int n : notes) {
+                NoteOn(ch, n, 110);
+                Sleep(50);
+            }
+            Sleep(120);
+            for (int n : notes) NoteOff(ch, n);
+        }).detach();
+    }
+
+    void PlayInvemaHexExplosion() {
+        if (!g_hMidiOut) return;
+        thread([]() {
+            NoteOn(9, 35, 127); // Acoustic Bass Drum
+            NoteOn(9, 36, 127); // Bass Drum 1
+            NoteOn(9, 49, 127); // Crash Cymbal
+            NoteOn(9, 57, 127); // Crash Cymbal 2
+            const uint8_t ch = 8;
+            SetInstrument(ch, 127); // Gunshot
+            NoteOn(ch, 36, 127);
+            Sleep(450);
+            NoteOff(ch, 36);
+        }).detach();
+    }
+
+    void PlayInvemaDeath() {
+        if (!g_hMidiOut) return;
+        thread([]() {
+            NoteOn(9, 35, 127);
+            NoteOn(9, 49, 127);
+            const uint8_t ch = 8;
+            SetInstrument(ch, 30); // Distortion Guitar
+            PitchBend(ch, 8192);
+            NoteOn(ch, 48, 127);
+            for (int b = 8192; b >= 3000; b -= 500) {
+                PitchBend(ch, b);
+                Sleep(25);
+            }
+            NoteOff(ch, 48);
             PitchBend(ch, 8192);
         }).detach();
     }

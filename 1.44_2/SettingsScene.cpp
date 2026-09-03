@@ -79,9 +79,9 @@ namespace SettingsScene
     }
 
     void InputMouseClick(int mx, int my) {
-        if (hoverBtn == 0) { masterVol = min(1.0f, masterVol + 0.1f); if (masterVol > 1.0f) masterVol = 0.0f; SoundManager::SetMasterVolume(masterVol); }
-        else if (hoverBtn == 1) { bgmVol = min(1.0f, bgmVol + 0.1f); if (bgmVol > 1.0f) bgmVol = 0.0f; SoundManager::SetBGMVolume(bgmVol); }
-        else if (hoverBtn == 2) { sfxVol = min(1.0f, sfxVol + 0.1f); if (sfxVol > 1.0f) sfxVol = 0.0f; SoundManager::SetSFXVolume(sfxVol); SoundManager::PlayCoin(); }
+        if (hoverBtn == 0) { masterVol = (masterVol >= 0.95f) ? 0.0f : min(1.0f, masterVol + 0.1f); SoundManager::SetMasterVolume(masterVol); }
+        else if (hoverBtn == 1) { bgmVol = (bgmVol >= 0.95f) ? 0.0f : min(1.0f, bgmVol + 0.1f); SoundManager::SetBGMVolume(bgmVol); }
+        else if (hoverBtn == 2) { sfxVol = (sfxVol >= 0.95f) ? 0.0f : min(1.0f, sfxVol + 0.1f); SoundManager::SetSFXVolume(sfxVol); SoundManager::PlayCoin(); }
         else if (hoverBtn == 3) ReturnToTitle();
     }
     void Release() {}

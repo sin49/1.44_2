@@ -1,4 +1,4 @@
-﻿#define NOMINMAX
+#define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mmsystem.h>
@@ -775,7 +775,7 @@ public:
             hasShield = false;
             shieldTimer = 0.0f;
             invincibleTimer = 1.2f;
-            SoundManager::PlayRetroBeep(115, 180);
+            SoundManager::PlayInvemaShieldDeflect();
             TriggerShake(3.0f, 0.2f);
             SpawnItemPickupParticles(player.x, player.y, 2);
             return false;
@@ -788,7 +788,7 @@ public:
             deathStartY = player.y;
             deathSplitSoundPlayed = false;
 
-            SoundManager::PlayRetroBeep(36, 400);
+            SoundManager::PlayInvemaDeath();
             TriggerShake(3.0f, 0.25f);
         }
         return true;
@@ -1512,7 +1512,7 @@ void PlayScene::Update() {
         if (starItem.life <= 0.0f) starItem.active = false;
         else if (CheckPlayerVsCircle(player, starItem.x, starItem.y, starItem.radius)) {
             starItem.active = false; sightBonus = 150.0f;
-            SoundManager::PlayRetroBeep(100, 150); TriggerShake(2.0f, 0.1f);
+            SoundManager::PlayInvemaItemStar(); TriggerShake(2.0f, 0.1f);
             SpawnItemPickupParticles(starItem.x, starItem.y, 0);
         }
     }
@@ -1558,7 +1558,7 @@ void PlayScene::Update() {
         if (swordItem.life <= 0.0f) swordItem.active = false;
         else if (CheckPlayerVsCircle(player, swordItem.x, swordItem.y, swordItem.radius)) {
             swordItem.active = false;
-            SoundManager::PlayRetroBeep(110, 150); TriggerShake(3.0f, 0.15f);
+            SoundManager::PlayInvemaSwordSlash(); TriggerShake(3.0f, 0.15f);
             SpawnItemPickupParticles(swordItem.x, swordItem.y, 1);
 
             if (!enemies.empty()) {
@@ -1610,7 +1610,7 @@ void PlayScene::Update() {
         if (shieldItem.life <= 0.0f) shieldItem.active = false;
         else if (CheckPlayerVsCircle(player, shieldItem.x, shieldItem.y, shieldItem.radius)) {
             shieldItem.active = false; hasShield = true; shieldTimer = 15.0f;
-            SoundManager::PlayRetroBeep(105, 160); TriggerShake(2.0f, 0.12f);
+            SoundManager::PlayInvemaItemShield(); TriggerShake(2.0f, 0.12f);
             SpawnItemPickupParticles(shieldItem.x, shieldItem.y, 2);
         }
     }
@@ -1654,6 +1654,7 @@ void PlayScene::Update() {
                 float kx = enemies[i].vx - enemies[j].vx; float ky = enemies[i].vy - enemies[j].vy;
                 float p = nx * kx + ny * ky;
                 if (p > 0) {
+                    SoundManager::PlayInvemaEnemyBounce();
                     float speedI = std::sqrt(enemies[i].vx * enemies[i].vx + enemies[i].vy * enemies[i].vy);
                     float speedJ = std::sqrt(enemies[j].vx * enemies[j].vx + enemies[j].vy * enemies[j].vy);
 
@@ -1703,7 +1704,7 @@ void PlayScene::Update() {
                     float explosionRadius = enemy.radius * 5.0f;
                     if (CheckPlayerVsCircle(player, enemy.x, enemy.y, explosionRadius)) TryKillPlayer();
 
-                    SoundManager::PlayRetroBeep(45, 200); TriggerShake(5.0f, 0.25f);
+                    SoundManager::PlayInvemaHexExplosion(); TriggerShake(5.0f, 0.25f);
                     SpawnHexExplosionParticles(enemy.x, enemy.y);
 
                     float newAngle = (float)(rand() % 360) * 3.14159f / 180.0f;
@@ -1727,7 +1728,7 @@ void PlayScene::Update() {
             enemy.shootTimer -= effectiveDt;
 
             if (enemy.shootTimer <= 0.0f) {
-                enemy.shootTimer = 2.5f; SoundManager::PlayRetroBeep(85, 60);
+                enemy.shootTimer = 2.5f; SoundManager::PlayInvemaLaser();
 
                 for (int i = 0; i < 3; ++i) {
                     float vAngle = enemy.angle + (i * 120.0f * 3.14159265f / 180.0f);
@@ -1869,7 +1870,7 @@ void PlayScene::Update() {
 
         if (bullet.x - bullet.radius < arena.minX || bullet.x + bullet.radius > arena.maxX ||
             bullet.y - bullet.radius < arena.minY || bullet.y + bullet.radius > arena.maxY) {
-            bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); continue;
+            bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); SoundManager::PlayInvemaBulletHit(); continue;
         }
 
         for (const auto& pillar : pillars) {
@@ -1878,7 +1879,7 @@ void PlayScene::Update() {
                 float closestY = (std::max)(pillar.box.minY, (std::min)(bullet.y, pillar.box.maxY));
                 float diffX = bullet.x - closestX; float diffY = bullet.y - closestY;
                 if ((diffX * diffX + diffY * diffY) < (bullet.radius * bullet.radius)) {
-                    bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); break;
+                    bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); SoundManager::PlayInvemaBulletHit(); break;
                 }
             }
         }
@@ -1894,7 +1895,7 @@ void PlayScene::Update() {
 
                     if (std::abs(perpDist) < (bullet.radius + gp.thickness / 2.0f) &&
                         paraDist >= -250.0f && paraDist <= maxL) {
-                        bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); break;
+                        bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); SoundManager::PlayInvemaBulletHit(); break;
                     }
                 }
                 else if (gp.type == PILLAR_CURVED) {
@@ -1911,7 +1912,7 @@ void PlayScene::Update() {
 
                         float dist = DistToSegment(bullet.x, bullet.y, ax, ay, bx, by, projX, projY);
                         if (dist < (bullet.radius + gp.thickness / 2.0f)) {
-                            bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); break;
+                            bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); SoundManager::PlayInvemaBulletHit(); break;
                         }
                     }
                 }
@@ -1929,7 +1930,7 @@ void PlayScene::Update() {
                         float projX, projY;
                         float dist = DistToSegment(bullet.x, bullet.y, ax, ay, bx, by, projX, projY);
                         if (dist < (bullet.radius + gp.thickness / 2.0f)) {
-                            bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); break;
+                            bullet.life = 0.0f; SpawnBulletHitParticles(bullet.x, bullet.y); SoundManager::PlayInvemaBulletHit(); break;
                         }
                     }
                 }
@@ -2425,7 +2426,7 @@ void PlayScene::OnKeyDown(WPARAM wParam) {
                 player.isDashing = true;
                 player.dashDuration = 0.18f;
                 player.dashCooldown = 1.2f;
-                SoundManager::PlayRetroBeep(90, 80);
+                SoundManager::PlayInvemaDash();
                 TriggerShake(2.0f, 0.15f);
             }
         }
@@ -2490,6 +2491,7 @@ namespace GameA {
 
     void Init(HWND hWnd) {
         gameoverchecker = false;
+        isForceEndRelay = false;
         g_hWndA = hWnd;
       
         SceneManager::GetInstance().ChangeScene(new TitleScene());

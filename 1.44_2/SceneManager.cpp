@@ -24,7 +24,7 @@ namespace GameC {
 }
 namespace GameD {
     void Init(HWND hWnd); void Update(); void Draw(); void Release(); void InputKeyUp(WPARAM wParam);
-    void InputKey(WPARAM wParam); void InputMouseClick(int mx, int my); void InputMouseMove(int mx, int my); bool IsGameOver(); int GetScore();
+    void InputKey(WPARAM wParam); void InputMouseClick(int mx, int my); void InputMouseMove(int mx, int my); bool IsGameOver(); int GetScore(); bool IsForceEnd();
 }
 namespace GameE { // ⭐ 사과게임 껍데기 추가
     void Init(HWND hWnd); void Update(); void Draw(); void Release();
@@ -138,10 +138,16 @@ namespace SceneManager
                 ChangeScene(SceneType::GameD);
             }
         }
-        else if (g_currentScene == SceneType::GameD && GameD::IsGameOver()) {
-            ScoreManager::RecordCurrentGameScore(ScoreManager::GameType::GameD, GameD::GetScore());
-            // 알까기 끝나면 사과게임(GameE)으로 이동!
-            ChangeScene(SceneType::GameE);
+        else if (g_currentScene == SceneType::GameD) {
+            if (GameD::IsForceEnd()) {
+                ScoreManager::RecordCurrentGameScore(ScoreManager::GameType::GameD, GameD::GetScore());
+                ChangeScene(SceneType::NameInput);
+            }
+            else if (GameD::IsGameOver()) {
+                ScoreManager::RecordCurrentGameScore(ScoreManager::GameType::GameD, GameD::GetScore());
+                // 알까기 끝나면 사과게임(GameE)으로 이동!
+                ChangeScene(SceneType::GameE);
+            }
         }
         else if (g_currentScene == SceneType::GameE) {
             if (GameE::IsForceEnd()) {
@@ -190,10 +196,59 @@ namespace SceneManager
 
     SceneType GetCurrentScene() { return g_currentScene; }
 
+    void SkipToNextScene() {
+        switch (g_currentScene) {
+        case SceneType::Title:
+            ScoreManager::ResetCurrentScores();
+            ChangeScene(SceneType::GameA);
+            break;
+        case SceneType::GameA:
+            ScoreManager::RecordCurrentGameScore(ScoreManager::GameType::GameA, GameA::GetScore());
+            ChangeScene(SceneType::GameC);
+            break;
+        case SceneType::GameB:
+            ChangeScene(SceneType::Title);
+            break;
+        case SceneType::GameC:
+            ScoreManager::RecordCurrentGameScore(ScoreManager::GameType::GameC, GameC::GetScore());
+            ChangeScene(SceneType::GameD);
+            break;
+        case SceneType::GameD:
+            ScoreManager::RecordCurrentGameScore(ScoreManager::GameType::GameD, GameD::GetScore());
+            ChangeScene(SceneType::GameE);
+            break;
+        case SceneType::GameE:
+            ScoreManager::RecordCurrentGameScore(ScoreManager::GameType::GameE, GameE::GetScore());
+            ChangeScene(SceneType::NameInput);
+            break;
+        case SceneType::NameInput:
+            ChangeScene(SceneType::Ranking);
+            break;
+        case SceneType::Ranking:
+        case SceneType::Settings:
+            ChangeScene(SceneType::Title);
+            break;
+        }
+    }
+
     // ==========================================
     // ⭐ 메인 프레임워크 키/마우스 입력 라우팅 
     // ==========================================
     void OnKeyDown(WPARAM wParam) {
+        // [치트키] F1: 다음 씬/게임으로 넘어가기 (릴레이 순서)
+        if (wParam == VK_F1) {
+            SoundManager::PlayCoin();
+            SkipToNextScene();
+            return;
+        }
+        // [치트키] F3~F8: 특정 게임 및 씬으로 바로 점프
+        else if (wParam == VK_F3) { SoundManager::PlayCoin(); ChangeScene(SceneType::GameA); return; }
+        else if (wParam == VK_F4) { SoundManager::PlayCoin(); ChangeScene(SceneType::GameB); return; }
+        else if (wParam == VK_F5) { SoundManager::PlayCoin(); ChangeScene(SceneType::GameC); return; }
+        else if (wParam == VK_F6) { SoundManager::PlayCoin(); ChangeScene(SceneType::GameD); return; }
+        else if (wParam == VK_F7) { SoundManager::PlayCoin(); ChangeScene(SceneType::GameE); return; }
+        else if (wParam == VK_F8) { SoundManager::PlayCoin(); ChangeScene(SceneType::Title); return; }
+
         if (g_currentScene == SceneType::Title) TitleScene::InputKey(wParam);
         else if (g_currentScene == SceneType::Settings) SettingsScene::InputKey(wParam);
         else if (g_currentScene == SceneType::Ranking) RankingScene::InputKey(wParam);

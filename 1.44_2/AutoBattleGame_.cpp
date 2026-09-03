@@ -1,4 +1,4 @@
-﻿// ==============================================================================
+// ==============================================================================
 // AutoBattleGame.cpp  -  144MB AutoChess Survival  (Pacing & UI Overhaul)
 // ==============================================================================
 #include <windows.h>
@@ -1036,9 +1036,6 @@ namespace GameB {
 
     void InputMouseClick(int mx, int my) {
         g_Game.ProcessMouse(WM_LBUTTONUP, mx, my, 0);
-        if (g_Game.state == GameState::Title) {
-            gameoverchecker = true;
-        }
     }
 
     void InputMouseMove(int mx, int my) { g_Game.ProcessMouse(WM_MOUSEMOVE, mx, my, 0); }

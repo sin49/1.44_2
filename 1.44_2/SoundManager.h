@@ -40,4 +40,17 @@ namespace SoundManager {
     void PlayShootSFX();
     void PlayHitSFX(int combo);
     void PlayOutSFX();
+
+    // [Game A: INVEMA 전용 풍성한 미디 효과음]
+    void PlayInvemaLaser();
+    void PlayInvemaBulletHit();
+    void PlayInvemaEnemyBounce();
+    void PlayInvemaPillarHit();
+    void PlayInvemaDash();
+    void PlayInvemaSwordSlash();
+    void PlayInvemaShieldDeflect();
+    void PlayInvemaItemStar();
+    void PlayInvemaItemShield();
+    void PlayInvemaHexExplosion();
+    void PlayInvemaDeath();
 }

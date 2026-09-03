@@ -1,4 +1,4 @@
-﻿#include <windows.h>
+#include <windows.h>
 #include <d2d1.h>
 #include <dwrite.h>
 #include <mmsystem.h>
@@ -108,6 +108,7 @@ namespace GameD {
     bool g_keyLeft = false;
     bool g_keyRight = false;
     bool gameoverchecker = false;
+    bool isForceEndRelay = false;
 
     ID2D1Factory* g_pD2DFactory = nullptr;
     IDWriteFactory* g_pDWriteFactory = nullptr;
@@ -488,7 +489,7 @@ namespace GameD {
                 g_pRenderTarget->FillEllipse(ellipse, pBrush);
             }
             else {
-                const wchar_t* symbol = (e.type == TYPE_JANGGI_MA) ? L"馬" : L"王";
+                const wchar_t* symbol = (e.type == TYPE_JANGGI_MA) ? L"\u99AC" : L"\u738B";
                 DrawSquareEnemy(e.x, e.y, e.radius, symbol, e.hp, e.maxHp, pBrush);
             }
         }
@@ -559,6 +560,7 @@ namespace GameD {
         if (!g_pDWriteFactory) CreateDeviceIndependentResources();
 
         gameoverchecker = false;
+        isForceEndRelay = false;
         g_gameState = STATE_TITLE;
         InitGame();
     }
@@ -584,6 +586,10 @@ namespace GameD {
         return gameoverchecker;
     }
 
+    bool IsForceEnd() {
+        return isForceEndRelay;
+    }
+
     int GetScore() {
         return g_score;
     }
@@ -598,7 +604,7 @@ namespace GameD {
                 g_gameState = STATE_PLAYING;
             }
             else if (IsPointInRectF(pt, BTN_EXIT_RECT)) {
-                gameoverchecker = true; // END RELAY
+                isForceEndRelay = true; // END RELAY
             }
         }
         else if (g_gameState == STATE_GAMEOVER) {

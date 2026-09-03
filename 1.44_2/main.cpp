@@ -252,6 +252,6 @@ namespace RankingScene {
 		DrawManager::DrawWhiteText(470, 640, 400, 40, L"[CLICK] or [SPACE] TO TITLE", 22.0f, D2D1::ColorF::Yellow);
 	}
 	void InputKey(WPARAM wParam) { if (wParam == VK_SPACE) SceneManager::ChangeScene(SceneManager::SceneType::Title); }
-	void InputMouseClick(int mx, int my) { if (my >= 630 && my <= 680) SceneManager::ChangeScene(SceneManager::SceneType::Title); }
+	void InputMouseClick(int mx, int my) { if (mx >= 440 && mx <= 840 && my >= 630 && my <= 680) SceneManager::ChangeScene(SceneManager::SceneType::Title); }
 	void InputMouseMove(int mx, int my) {}
 }

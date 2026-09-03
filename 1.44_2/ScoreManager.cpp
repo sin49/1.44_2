@@ -69,6 +69,12 @@ namespace ScoreManager
     }
     int g_currentRunScores[5] = { 0, 0, 0, 0, 0 };
 
+    void ResetCurrentScores() {
+        for (int i = 0; i < 5; ++i) {
+            g_currentRunScores[i] = 0;
+        }
+    }
+
     // 각 게임이 끝날 때마다 점수를 임시 보관
     void RecordCurrentGameScore(GameType game, int score) {
         int idx = (int)game;
@@ -77,15 +83,20 @@ namespace ScoreManager
         }
     }
 
-    // 게임 D까지 모두 끝나면 총점을 합산하고 랭킹을 갱신
+    // 릴레이가 끝나면 총점을 합산하고 랭킹을 갱신 (릴레이 참여 게임만 저장)
     void FinalizeRelayAndSave(const char* initial) {
         int totalScore = 0;
-        for (int i = 0; i < 5; ++i) {
-            totalScore += g_currentRunScores[i];
+        GameType relayGames[] = { GameType::GameA, GameType::GameC, GameType::GameD, GameType::GameE };
+        for (GameType game : relayGames) {
+            int score = g_currentRunScores[(int)game];
+            totalScore += score;
             // 개별 게임 랭킹도 갱신
-            AddScore((GameType)i, g_currentRunScores[i], initial);
+            AddScore(game, score, initial);
         }
         // 최종 총합 랭킹 갱신
         AddScore(GameType::Total, totalScore, initial);
+
+        // 다음 런을 위해 점수 초기화
+        ResetCurrentScores();
     }
 }

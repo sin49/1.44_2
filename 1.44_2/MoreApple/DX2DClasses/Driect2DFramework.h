@@ -13,7 +13,7 @@ namespace DX2DClasses
 		ID2D1Factory* m_pD2DFactory = nullptr;
 		ID2D1HwndRenderTarget* m_pRenderTarget = nullptr;
 		IWICImagingFactory* m_pWICImagingFactory = nullptr;
-		IDWriteFactory* m_pWriteFactory;
+		IDWriteFactory* m_pWriteFactory = nullptr;
 	public:
 		ID2D1Factory* GetD2DFactory() { return m_pD2DFactory; }
 		ID2D1HwndRenderTarget* GetD2DRenderTarget() { return m_pRenderTarget; }

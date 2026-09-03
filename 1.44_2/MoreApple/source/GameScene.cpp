@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "FruitManager.h"
 #include "Basket.h"
-#include "SoundManager.h"
+#include "../../SoundManager.h"
 
 #include "../DX2DClasses/Driect2DFramework.h"
 #include "../DX2DClasses/Colliders.h"
@@ -65,7 +65,7 @@ void CGameScene::Initialize(
 		L"Images\\Background.png"
 	);
 
-	// SoundManager ÃÊ±âÈ­
+	// SoundManager ì´ˆê¸°í™”
 	SoundManager::Initialize();
 
 	m_restartButtonRect =
@@ -161,12 +161,12 @@ void CGameScene::Initialize(
 	assert(hr == S_OK);
 
 	// -------------------------
-	// Player »ı¼º
+	// Player ìƒì„±
 	// -------------------------
 	m_pPlayer = new CPlayer();
 
 	// -------------------------
-	// Player ÀÌ¹ÌÁö »ı¼º
+	// Player ì´ë¯¸ì§€ ìƒì„±
 	// -------------------------
 	CImage* pIdleImage = new CImage(
 		m_pDX2DFramework->GetD2DRenderTarget(),
@@ -175,7 +175,7 @@ void CGameScene::Initialize(
 	);
 
 	// -------------------------
-	// ÀÌ¹ÌÁö ·Îµå
+	// ì´ë¯¸ì§€ ë¡œë“œ
 	// -------------------------
 	pIdleImage->ManualLoadImage(
 		m_hWnd,
@@ -197,7 +197,7 @@ void CGameScene::Initialize(
 	m_pPlayer->SetRunImage(pRunImage);
 
 	// -------------------------
-	// CGameObject ÃÊ±âÈ­
+	// CGameObject ì´ˆê¸°í™”
 	// -------------------------
 	m_pPlayer->Initialize(
 		pIdleImage,
@@ -206,7 +206,7 @@ void CGameScene::Initialize(
 	);
 
 	// -------------------------
-	// Player À§Ä¡ ¼³Á¤
+	// Player ìœ„ì¹˜ ì„¤ì •
 	// -------------------------
 	m_pPlayer->GetTransform().SetTRS(
 		SVector2(400.0f, 900.0f),
@@ -214,10 +214,10 @@ void CGameScene::Initialize(
 		SVector2(1.0f, 1.0f)
 	);
 
-	// Animator ÃÊ±â ÇÁ·¹ÀÓ
+	// Animator ì´ˆê¸° í”„ë ˆì„
 	m_pPlayer->GetAnimator()->SetFrame(0);
 
-	// FruitManager ÃÊ±âÈ­
+	// FruitManager ì´ˆê¸°í™”
 	m_pFruitManager = new CFruitManager();
 
 	m_pFruitManager->Initialize(
@@ -255,7 +255,6 @@ void CGameScene::Initialize(
 
 void CGameScene::Release()
 {
-	SoundManager::Release();
 	SoundManager::StopBGM();
 
 	if (m_pBackgroundImage)
@@ -426,8 +425,8 @@ void CGameScene::CheckCollision()
 
 void CGameScene::CheckBasketCollision()
 {
-	// ÀÌ¹Ì °úÀÏÀÌ ½×¿© ÀÖ´Ù¸é
-	// ¹Ù±¸´Ï Äİ¶óÀÌ´õ´Â ´õ ÀÌ»ó »ç¿ëÇÏÁö ¾Ê´Â´Ù.
+	// ì´ë¯¸ ê³¼ì¼ì´ ìŒ“ì—¬ ìˆë‹¤ë©´
+	// ë°”êµ¬ë‹ˆ ì½œë¼ì´ë”ëŠ” ë” ì´ìƒ ì‚¬ìš©í•˜ì§€ ì•ŠëŠ”ë‹¤.
 	if (m_pTopFruit != nullptr)
 		return;
 
@@ -445,7 +444,7 @@ void CGameScene::CheckBasketCollision()
 		if (pFruit == nullptr)
 			continue;
 
-		// ÀÌ¹Ì ½×ÀÎ °úÀÏÀº °Ë»çÇÏÁö ¾Ê´Â´Ù.
+		// ì´ë¯¸ ìŒ“ì¸ ê³¼ì¼ì€ ê²€ì‚¬í•˜ì§€ ì•ŠëŠ”ë‹¤.
 		if (pFruit->IsStacked())
 			continue;
 
@@ -488,7 +487,7 @@ void CGameScene::CheckFruitStackCollision()
 		if (pFruit == nullptr)
 			continue;
 
-		// ÀÌ¹Ì ½×¿© ÀÖ´Â °úÀÏ
+		// ì´ë¯¸ ìŒ“ì—¬ ìˆëŠ” ê³¼ì¼
 		if (pFruit->IsStacked())
 			continue;
 
@@ -532,7 +531,7 @@ void CGameScene::StackFruit(CFruit* pFruit)
 	if (pFruitCollider == nullptr)
 		return;
 
-	// Ã³À½ ½×ÀÌ´Â °úÀÏ
+	// ì²˜ìŒ ìŒ“ì´ëŠ” ê³¼ì¼
 	if (m_pTopFruit == nullptr)
 	{
 		SVector2 basketPos =
@@ -547,7 +546,7 @@ void CGameScene::StackFruit(CFruit* pFruit)
 		if (pBasketCollider == nullptr)
 			return;
 
-		// ¹Ù±¸´ÏÀÇ ¿ùµå ÁÂÇ¥
+		// ë°”êµ¬ë‹ˆì˜ ì›”ë“œ ì¢Œí‘œ
 		SVector2 basketTL =
 			pBasketCollider->GetWorldTL();
 
@@ -563,7 +562,7 @@ void CGameScene::StackFruit(CFruit* pFruit)
 		float fruitRadius =
 			pFruitCollider->GetRadius();
 
-		// °úÀÏÀ» ¹Ù±¸´Ï À§¿¡ ¹èÄ¡
+		// ê³¼ì¼ì„ ë°”êµ¬ë‹ˆ ìœ„ì— ë°°ì¹˜
 		SVector2 pos =
 			pFruit->GetTransform().GetTransrate();
 
@@ -580,7 +579,7 @@ void CGameScene::StackFruit(CFruit* pFruit)
 
 		pFruit->GetTransform().SetTransrate(pos);
 
-		// ¹Ù±¸´Ï¿Í Ã¼¸® »çÀÌÀÇ »ó´ë À§Ä¡ ÀúÀå
+		// ë°”êµ¬ë‹ˆì™€ ì²´ë¦¬ ì‚¬ì´ì˜ ìƒëŒ€ ìœ„ì¹˜ ì €ì¥
 	
 		pFruit->SetStackOffset(
 			pos - basketPos
@@ -588,14 +587,14 @@ void CGameScene::StackFruit(CFruit* pFruit)
 
 		pFruit->SetStacked(true);
 
-		// ´õ ÀÌ»ó ¶³¾îÁöÁö ¾ÊÀ½
+		// ë” ì´ìƒ ë–¨ì–´ì§€ì§€ ì•ŠìŒ
 		pFruit->SetStacked(true);
 
-		// ¹Ù±¸´Ï Äİ¶óÀÌ´õ Á¦°Å
+		// ë°”êµ¬ë‹ˆ ì½œë¼ì´ë” ì œê±°
 		delete m_pBasket->GetCollider();
 		m_pBasket->SetCollider(nullptr);
 
-		// ÀÌ °úÀÏÀ» ÃÖ»ó´Ü °úÀÏ·Î ÁöÁ¤
+		// ì´ ê³¼ì¼ì„ ìµœìƒë‹¨ ê³¼ì¼ë¡œ ì§€ì •
 		m_pTopFruit = pFruit;
 
 		SoundManager::PlayCoin();
@@ -605,7 +604,7 @@ void CGameScene::StackFruit(CFruit* pFruit)
 		return;
 	}
 
-	// µÎ ¹øÂ° °úÀÏºÎÅÍ
+	// ë‘ ë²ˆì§¸ ê³¼ì¼ë¶€í„°
 	CCircleCollider* pTopCollider =
 		static_cast<CCircleCollider*>(
 			m_pTopFruit->GetCollider()
@@ -623,7 +622,7 @@ void CGameScene::StackFruit(CFruit* pFruit)
 	float fruitRadius =
 		pFruitCollider->GetRadius();
 
-	// ±âÁ¸ ÃÖ»ó´Ü °úÀÏ À§¿¡ ¹èÄ¡
+	// ê¸°ì¡´ ìµœìƒë‹¨ ê³¼ì¼ ìœ„ì— ë°°ì¹˜
 	SVector2 pos =
 		pFruit->GetTransform().GetTransrate();
 
@@ -640,7 +639,7 @@ void CGameScene::StackFruit(CFruit* pFruit)
 
 	pFruit->GetTransform().SetTransrate(pos);
 
-	// ¹Ù±¸´Ï ±âÁØ »ó´ë À§Ä¡ ÀúÀå
+	// ë°”êµ¬ë‹ˆ ê¸°ì¤€ ìƒëŒ€ ìœ„ì¹˜ ì €ì¥
 	SVector2 basketPos =
 		m_pBasket->GetTransform().GetTransrate();
 
@@ -648,14 +647,14 @@ void CGameScene::StackFruit(CFruit* pFruit)
 		pos - basketPos
 	);
 
-	// ´õ ÀÌ»ó ¶³¾îÁöÁö ¾ÊÀ½
+	// ë” ì´ìƒ ë–¨ì–´ì§€ì§€ ì•ŠìŒ
 	pFruit->SetStacked(true);
 
-	// ±âÁ¸ ÃÖ»ó´Ü °úÀÏÀÇ Äİ¶óÀÌ´õ Á¦°Å
+	// ê¸°ì¡´ ìµœìƒë‹¨ ê³¼ì¼ì˜ ì½œë¼ì´ë” ì œê±°
 	delete m_pTopFruit->GetCollider();
 	m_pTopFruit->SetCollider(nullptr);
 
-	// »õ·Î¿î °úÀÏÀÌ ÃÖ»ó´Ü °úÀÏ
+	// ìƒˆë¡œìš´ ê³¼ì¼ì´ ìµœìƒë‹¨ ê³¼ì¼
 	m_pTopFruit = pFruit;
 
 	SoundManager::PlayCoin();
@@ -676,7 +675,7 @@ void CGameScene::UpdateStackedFruit()
 		if (pFruit == nullptr)
 			continue;
 
-		// ½×ÀÌÁö ¾ÊÀº Ã¼¸®´Â °Çµå¸®Áö ¾Ê´Â´Ù.
+		// ìŒ“ì´ì§€ ì•Šì€ ì²´ë¦¬ëŠ” ê±´ë“œë¦¬ì§€ ì•ŠëŠ”ë‹¤.
 		if (!pFruit->IsStacked())
 			continue;
 
@@ -745,7 +744,7 @@ void CGameScene::DrawGoal()
 	ID2D1HwndRenderTarget* pRenderTarget =
 		m_pDX2DFramework->GetD2DRenderTarget();
 
-	// UI/¼± ±×¸®±â Àü¿¡ Transform ÃÊ±âÈ­
+	// UI/ì„  ê·¸ë¦¬ê¸° ì „ì— Transform ì´ˆê¸°í™”
 	pRenderTarget->SetTransform(
 		D2D1::Matrix3x2F::Identity()
 	);
@@ -825,7 +824,7 @@ void CGameScene::DrawScore()
 	ID2D1HwndRenderTarget* pRenderTarget =
 		m_pDX2DFramework->GetD2DRenderTarget();
 
-	// °úÀÏÀÌ »ç¿ëÇÑ Transform ÃÊ±âÈ­
+	// ê³¼ì¼ì´ ì‚¬ìš©í•œ Transform ì´ˆê¸°í™”
 	pRenderTarget->SetTransform(
 		D2D1::Matrix3x2F::Identity()
 	);
@@ -864,7 +863,7 @@ void CGameScene::DrawResult()
 		D2D1::Matrix3x2F::Identity()
 	);
 
-	// °á°úÃ¢ ¹è°æ
+	// ê²°ê³¼ì°½ ë°°ê²½
 	D2D1_RECT_F resultRect =
 		D2D1::RectF(
 			200.0f,
@@ -977,14 +976,14 @@ void CGameScene::DrawResult()
 		m_pScoreBrush
 	);
 
-	// ´Ù½ÃÇÏ±â ¹öÆ°
+	// ë‹¤ì‹œí•˜ê¸° ë²„íŠ¼
 	pRenderTarget->DrawRectangle(
 		m_restartButtonRect,
 		m_pScoreBrush,
 		2.0f
 	);
 
-	// ¸ŞÀÎÈ­¸é ¹öÆ°
+	// ë©”ì¸í™”ë©´ ë²„íŠ¼
 	pRenderTarget->DrawRectangle(
 		m_mainButtonRect,
 		m_pScoreBrush,
@@ -1025,14 +1024,14 @@ void CGameScene::OnMouseClick(int x, int y)
 			m_eGameState = EGameState::PLAYING;
 		}
 
-		// EXIT ¹öÆ°
+		// EXIT ë²„íŠ¼
 		if (x >= m_exitButtonRect.left &&
 			x <= m_exitButtonRect.right &&
 			y >= m_exitButtonRect.top &&
 			y <= m_exitButtonRect.bottom)
 		{
 			m_bForceEnd = true;
-			m_eGameState == EGameState::RESULT;
+			m_eGameState = EGameState::RESULT;
 			return;
 		}
 
@@ -1137,7 +1136,7 @@ void CGameScene::GoToMainMenu()
 			0.0f
 		);
 
-		// ¹Ù±¸´Ï Äİ¶óÀÌ´õ°¡ Á¦°ÅµÈ »óÅÂ¶ó¸é ´Ù½Ã »ı¼º
+		// ë°”êµ¬ë‹ˆ ì½œë¼ì´ë”ê°€ ì œê±°ëœ ìƒíƒœë¼ë©´ ë‹¤ì‹œ ìƒì„±
 		if (m_pBasket->GetCollider() == nullptr)
 		{
 			m_pBasket->InitializeCollider();
@@ -1171,7 +1170,7 @@ void CGameScene::DrawTitle()
 		m_pResultBrush
 	);
 
-	// Á¦¸ñ
+	// ì œëª©
 	wchar_t titleText[] = L"MORE APPLE";
 
 	D2D1_RECT_F titleRect =
@@ -1238,14 +1237,14 @@ void CGameScene::DrawTitle()
 void CGameScene::AddHighScore(int score)
 {
 	TScore = score;
-	// 3µîº¸´Ù ³·À¸¸é µî·ÏÇÏÁö ¾ÊÀ½
+	// 3ë“±ë³´ë‹¤ ë‚®ìœ¼ë©´ ë“±ë¡í•˜ì§€ ì•ŠìŒ
 	if (score <= m_nHighScores[2])
 		return;
 
-	// »õ·Î¿î Á¡¼ö¸¦ ÀÏ´Ü 3µî ÀÚ¸®¿¡ ³ÖÀ½
+	// ìƒˆë¡œìš´ ì ìˆ˜ë¥¼ ì¼ë‹¨ 3ë“± ìë¦¬ì— ë„£ìŒ
 	m_nHighScores[2] = score;
 
-	// ³»¸²Â÷¼ø Á¤·Ä
+	// ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬
 	if (m_nHighScores[2] > m_nHighScores[1])
 	{
 		int temp = m_nHighScores[2];
@@ -1365,15 +1364,15 @@ void CGameScene::ProcessBomb()
 
 	m_pTopFruit = pNewTopFruit;
 
-	// »èÁ¦ ÈÄ °úÀÏÀÌ ³²¾Æ ÀÖ´Ù¸é
+	// ì‚­ì œ í›„ ê³¼ì¼ì´ ë‚¨ì•„ ìˆë‹¤ë©´
 	if (m_pTopFruit != nullptr)
 	{
-		// »õ·Î¿î ÃÖ»ó´Ü °úÀÏ¿¡ Collider »ı¼º
+		// ìƒˆë¡œìš´ ìµœìƒë‹¨ ê³¼ì¼ì— Collider ìƒì„±
 		m_pFruitManager->CreateCollider(m_pTopFruit);
 	}
 	else
 	{
-		// °úÀÏÀÌ ÇÏ³ªµµ ¾ø´Ù¸é ¹Ù±¸´Ï Collider º¹±¸
+		// ê³¼ì¼ì´ í•˜ë‚˜ë„ ì—†ë‹¤ë©´ ë°”êµ¬ë‹ˆ Collider ë³µêµ¬
 		if (m_pBasket != nullptr &&
 			m_pBasket->GetCollider() == nullptr)
 		{
@@ -1387,7 +1386,7 @@ void CGameScene::CreateTopFruitCollider()
 	if (m_pTopFruit == nullptr)
 		return;
 
-	// ÀÌ¹Ì Collider°¡ ÀÖ´Ù¸é »ı¼ºÇÏÁö ¾Ê´Â´Ù.
+	// ì´ë¯¸ Colliderê°€ ìˆë‹¤ë©´ ìƒì„±í•˜ì§€ ì•ŠëŠ”ë‹¤.
 	if (m_pTopFruit->GetCollider() != nullptr)
 		return;
 

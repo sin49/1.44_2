@@ -111,6 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_HAS_STD_BYTE=0</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,6 +130,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_HAS_STD_BYTE=0</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -169,7 +171,6 @@
     <ClCompile Include="MoreApple\source\FruitManager.cpp" />
     <ClCompile Include="MoreApple\source\GameScene.cpp" />
     <ClCompile Include="MoreApple\source\Player.cpp" />
-    <ClCompile Include="MoreApple\source\SoundManager.cpp" />
     <ClCompile Include="MoreApple\stdafx.cpp" />
     <ClCompile Include="RobotJump.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -204,7 +205,6 @@
     <ClInclude Include="MoreApple\source\FruitManager.h" />
     <ClInclude Include="MoreApple\source\GameScene.h" />
     <ClInclude Include="MoreApple\source\Player.h" />
-    <ClInclude Include="MoreApple\source\SoundManager.h" />
     <ClInclude Include="MoreApple\stdafx.h" />
     <ClInclude Include="MoreApple\targetver.h" />
     <ClInclude Include="SceneManager.h" />

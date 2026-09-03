@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="FrameWork">
@@ -102,9 +102,6 @@
     <ClCompile Include="MoreApple\DX2DClasses\Matrix3x3.cpp">
       <Filter>GameE%29Apple\Dx2FrameWork</Filter>
     </ClCompile>
-    <ClCompile Include="MoreApple\source\SoundManager.cpp">
-      <Filter>GameE%29Apple\Source</Filter>
-    </ClCompile>
     <ClCompile Include="MoreApple\source\Basket.cpp">
       <Filter>GameE%29Apple\Source</Filter>
     </ClCompile>
@@ -195,9 +192,6 @@
       <Filter>GameE%29Apple\Dx2FrameWork</Filter>
     </ClInclude>
     <ClInclude Include="MoreApple\source\Player.h">
-      <Filter>GameE%29Apple\Source</Filter>
-    </ClInclude>
-    <ClInclude Include="MoreApple\source\SoundManager.h">
       <Filter>GameE%29Apple\Source</Filter>
     </ClInclude>
     <ClInclude Include="MoreApple\source\Basket.h">
