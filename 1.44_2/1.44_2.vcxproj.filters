@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="FrameWork">
+      <UniqueIdentifier>{6fd9a746-0adb-40e6-b21b-34a79b6f8ba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameD%29Badook">
+      <UniqueIdentifier>{ab892637-2ab3-463b-9868-b3bd7b352194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameC%29roboJump">
+      <UniqueIdentifier>{67468e5c-98e0-4fd4-ad05-c73f3d8c79d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameB%29AutoBattle">
+      <UniqueIdentifier>{6be9237a-3a3a-49d2-8b3e-f741cce02306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameA%29Undertale">
+      <UniqueIdentifier>{ac5b377c-acb8-4294-9499-826326c6023d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameE%29Apple">
+      <UniqueIdentifier>{6688da6b-42f7-4fb0-bef4-1671d030a16a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SettingsScene.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScene.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreManager.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawManager.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotJump.cpp">
+      <Filter>GameC%29roboJump</Filter>
+    </ClCompile>
+    <ClCompile Include="INVEMA_.cpp">
+      <Filter>GameA%29Undertale</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoBattleGame_.cpp">
+      <Filter>GameB%29AutoBattle</Filter>
+    </ClCompile>
+    <ClCompile Include="BadukShooting.cpp">
+      <Filter>GameD%29Badook</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SoundManager.h">
+      <Filter>FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreManager.h">
+      <Filter>FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawManager.h">
+      <Filter>FrameWork</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
