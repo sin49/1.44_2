@@ -302,16 +302,6 @@ public:
 
                                                              void Update(float dt) {
                                                                  deltaTime = dt; if (deltaTime > 0.1f)deltaTime = 0.1f; fps = 1.f / deltaTime; audioTime += deltaTime;
-                                                                 int nb = (int)(audioTime * 4.f);
-                                                                 if (nb > currentBeat) {
-                                                                     currentBeat = nb; int step = currentBeat % 32;
-                                                                     if (step % 4 == 0) SoundManager::PlayMidiNote(9, 36, 110, true);
-                                                                     if (step % 8 == 4) SoundManager::PlayMidiNote(9, 38, 100, true);
-                                                                     if (step % 2 == 0) SoundManager::PlayMidiNote(9, 42, 70, true);
-                                                                     int bass[] = { 36,36,39,36,36,36,39,36,41,41,44,41,41,41,44,41 };
-                                                                     if (step % 2 == 0) SoundManager::PlayMidiNote(0, bass[(step / 2) % 16], 90, true);
-                                                                     if (step == 0 || step == 6 || step == 12 || step == 20) SoundManager::PlayMidiNote(1, 60 + (step % 5) * 2, 100, true);
-                                                                 }
                                                                  shakeAmt *= 1.f - 8.f * deltaTime; if (shakeAmt < 0.01f)shakeAmt = 0;
                                                                  if (state == GameState::Playing) UpdateLogic();
                                                                  UpdateParticles();
@@ -647,18 +637,21 @@ private:
                     if (lowestAId != -1 && closestEDist < 400000.f) {
                         units[lowestAId].hp = min(units[lowestAId].maxHp, units[lowestAId].hp + units[i].damage);
                         units[i].attackCooldown = slowAtk; units[i].attackAnimTimer = 0.3f; SpawnSpark(units[lowestAId].x, units[lowestAId].y, 20, Gdiplus::Color(255, 50, 255, 50), 5);
+                        SoundManager::PlayAutoBattleMagicCast();
                     }
                 }
                 else if (units[i].type == UnitType::Necromancer || units[i].type == UnitType::Lich || units[i].type == UnitType::DeathKnight) {
                     if (closestEId != -1 && closestEDist < 400000.f) {
                         int sk = SpawnUnit(units[i].x + (rand() % 100 - 50), units[i].y + (rand() % 100 - 50), 0, UnitType::Skeleton);
                         if (sk != -1) { units[i].attackCooldown = slowAtk * 1.5f; units[i].attackAnimTimer = 0.3f; SpawnSmoke(units[i].x, units[i].y, 0, 3); }
+                        SoundManager::PlayAutoBattleMagicCast();
                     }
                 }
                 else if (units[i].type == UnitType::Elementalist || units[i].type == UnitType::Archmage || units[i].type == UnitType::IceMage) {
                     if (closestEId != -1 && closestEDist < 400000.f) {
                         int sp = SpawnUnit(units[i].x + (rand() % 100 - 50), units[i].y + (rand() % 100 - 50), 0, UnitType::Spirit);
                         if (sp != -1) { units[i].attackCooldown = slowAtk * 1.2f; units[i].attackAnimTimer = 0.3f; }
+                        SoundManager::PlayAutoBattleMagicCast();
                     }
                 }
                 else if (closestEId != -1) {
@@ -667,6 +660,7 @@ private:
                         HitUnit(closestEId, i, -(units[i].x - units[closestEId].x), -(units[i].y - units[closestEId].y), closestEDist, units[i].damage);
                         units[i].attackCooldown = (units[i].type == UnitType::Assassin || units[i].type == UnitType::Phantom) ? 0.6f : slowAtk;
                         units[i].attackAnimTimer = 0.2f; units[i].facingYaw = atan2f(dy, dx);
+                        SoundManager::PlayAutoBattleAttackMelee();
                     }
                     else if (units[i].isRanged && closestEDist < 350000.f) {
                         units[i].attackCooldown = (units[i].type == UnitType::Sniper || units[i].type == UnitType::Ranger) ? 2.0f : slowAtk;
@@ -675,6 +669,7 @@ private:
                         else SpawnSpark(units[i].x, units[i].y, 15.f * units[i].scale, GetColor(units[i].type), 3);
                         int pId = SpawnUnit(units[i].x, units[i].y, 4, UnitType::Projectile);
                         if (pId != -1) { units[pId].damage = units[i].damage; units[pId].targetId = closestEId; units[pId].vx = (dx / dLen) * 2000.f; units[pId].vy = (dy / dLen) * 2000.f; units[pId].vz = 200.f; units[pId].z = 15.f * units[i].scale; }
+                        SoundManager::PlayAutoBattleAttackRanged();
                     }
                 }
             }

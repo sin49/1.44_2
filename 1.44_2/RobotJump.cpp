@@ -255,13 +255,7 @@ float4 PS(PS_INPUT input) : SV_Target {
 
 
 void UpdateBGM(float dt) {
-    g_bgmTimer += dt;
-    if (g_bgmTimer >= 0.32f) {
-        g_bgmTimer -= 0.32f;
-        static const int melody[] = { 60, 64, 67, 72, 71, 67, 64, 62, 59, 62, 67, 71, 69, 67, 64, 60 };
-        SoundManager::PlayMidiNote(0, melody[g_bgmStep % 16], 70);
-        g_bgmStep++;
-    }
+    // 중앙 SoundManager BGM 시퀀서로 완전 통합됨
 }
 
 void InitTimer() {
@@ -737,8 +731,9 @@ void UpdateJumpGame(float dt) {
         SpawnJumpPlatformCluster(g_lastSpawnZ);
     }
 
-    if (g_playerPos.y < -12.0f) {
+    if (g_playerPos.y < -12.0f && !g_isJumpGameOver) {
         g_isJumpGameOver = true;
+        SoundManager::StopSceneBGM();
         SoundManager::PlayMidiNote(0, 36, 120);
         SoundManager::PlayExplosion();
     }
@@ -1697,12 +1692,12 @@ void Draw() {
 
 void Release() {
 
-    if (g_hFontTitle) DeleteObject(g_hFontTitle);
-    if (g_hFontBig) DeleteObject(g_hFontBig);
-    if (g_hFontMed) DeleteObject(g_hFontMed);
-    if (g_hFontSub) DeleteObject(g_hFontSub);
-    if (g_hUIBitmap) DeleteObject(g_hUIBitmap);
-    if (g_hMemDC) DeleteDC(g_hMemDC);
+    if (g_hFontTitle) { DeleteObject(g_hFontTitle); g_hFontTitle = NULL; }
+    if (g_hFontBig) { DeleteObject(g_hFontBig); g_hFontBig = NULL; }
+    if (g_hFontMed) { DeleteObject(g_hFontMed); g_hFontMed = NULL; }
+    if (g_hFontSub) { DeleteObject(g_hFontSub); g_hFontSub = NULL; }
+    if (g_hUIBitmap) { DeleteObject(g_hUIBitmap); g_hUIBitmap = NULL; }
+    if (g_hMemDC) { DeleteDC(g_hMemDC); g_hMemDC = NULL; }
 
     SafeRelease(&g_pUIIndexBuffer); SafeRelease(&g_pUIVertexBuffer); SafeRelease(&g_pUIBlendState); SafeRelease(&g_pUISRV); SafeRelease(&g_pUITexture);
     SafeRelease(&g_pSamplerState); SafeRelease(&g_pTextureSRV); SafeRelease(&g_pConstantBuffer); SafeRelease(&g_pIndexBuffer); SafeRelease(&g_pVertexBuffer);

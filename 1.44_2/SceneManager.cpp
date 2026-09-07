@@ -2,6 +2,7 @@
 #include "ScoreManager.h"
 #include <Windows.h>
 #include "soundManager.h"
+#include "CrashHandler.h"
 #include <d2d1.h> // 해상도 리사이즈용
 
 // 1. 각 게임의 껍데기(네임스페이스) 미리 선언
@@ -61,6 +62,9 @@ namespace SceneManager
         if (now - g_lastSceneChangeTime < 400) return; // 0.4초 딜레이
         g_lastSceneChangeTime = now;
 
+        // ⭐ 씬 전환 즉시 이전 씬의 모든 BGM 및 지속 사운드/이펙트 완전 정지
+        SoundManager::StopAllSounds();
+
         while (ShowCursor(TRUE) < 0);
         // 기존 씬 해제
         switch (g_currentScene) {
@@ -98,6 +102,19 @@ namespace SceneManager
         case SceneType::GameC: GameC::Init(g_hWnd); break;
         case SceneType::GameD: GameD::Init(g_hWnd); break;
         case SceneType::GameE: GameE::Init(g_hWnd); break;
+        }
+
+        // 새 씬 전용 반복 비트 MIDI BGM 재생
+        switch (g_currentScene) {
+        case SceneType::Title: SoundManager::PlaySceneBGM(SoundManager::BGMType::Title); break;
+        case SceneType::Settings: SoundManager::PlaySceneBGM(SoundManager::BGMType::Settings); break;
+        case SceneType::Ranking: SoundManager::PlaySceneBGM(SoundManager::BGMType::Ranking); break;
+        case SceneType::NameInput: SoundManager::PlaySceneBGM(SoundManager::BGMType::Ranking); break;
+        case SceneType::GameA: SoundManager::PlaySceneBGM(SoundManager::BGMType::GameA); break;
+        case SceneType::GameB: SoundManager::PlaySceneBGM(SoundManager::BGMType::GameB); break;
+        case SceneType::GameC: SoundManager::PlaySceneBGM(SoundManager::BGMType::GameC); break;
+        case SceneType::GameD: SoundManager::PlaySceneBGM(SoundManager::BGMType::GameD); break;
+        case SceneType::GameE: SoundManager::PlaySceneBGM(SoundManager::BGMType::GameE); break;
         }
     }
    
@@ -248,6 +265,12 @@ namespace SceneManager
         else if (wParam == VK_F6) { SoundManager::PlayCoin(); ChangeScene(SceneType::GameD); return; }
         else if (wParam == VK_F7) { SoundManager::PlayCoin(); ChangeScene(SceneType::GameE); return; }
         else if (wParam == VK_F8) { SoundManager::PlayCoin(); ChangeScene(SceneType::Title); return; }
+        // [치트키] F9: 즉시 현재 상태 수동 덤프(.dmp) 생성
+        else if (wParam == VK_F9) {
+            SoundManager::PlayCoin();
+            CrashHandler::CreateManualDump(L"ManualDump_");
+            return;
+        }
 
         if (g_currentScene == SceneType::Title) TitleScene::InputKey(wParam);
         else if (g_currentScene == SceneType::Settings) SettingsScene::InputKey(wParam);

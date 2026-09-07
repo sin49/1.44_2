@@ -148,6 +148,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="CrashHandler.cpp" />
     <ClCompile Include="DrawManager.cpp" />
     <ClCompile Include="INVEMA_.cpp" />
     <ClCompile Include="main.cpp" />
@@ -176,10 +177,13 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="SettingsScene.cpp" />
+    <ClCompile Include="SoundClip.cpp" />
+    <ClCompile Include="SoundCoroutine.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CrashHandler.h" />
     <ClInclude Include="DrawManager.h" />
     <ClInclude Include="MoreApple\DX2DClasses\Colliders.h" />
     <ClInclude Include="MoreApple\DX2DClasses\CollisionCheck.h" />
@@ -209,6 +213,8 @@
     <ClInclude Include="MoreApple\targetver.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ScoreManager.h" />
+    <ClInclude Include="SoundClip.h" />
+    <ClInclude Include="SoundCoroutine.h" />
     <ClInclude Include="SoundManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

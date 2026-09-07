@@ -30,6 +30,12 @@
     <ClCompile Include="SettingsScene.cpp">
       <Filter>FrameWork</Filter>
     </ClCompile>
+    <ClCompile Include="SoundClip.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundCoroutine.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>FrameWork</Filter>
     </ClCompile>
@@ -58,6 +64,9 @@
       <Filter>GameD%29Badook</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashHandler.cpp">
       <Filter>FrameWork</Filter>
     </ClCompile>
     <ClCompile Include="MoreApple\DX2DClasses\SingletonRenderTarget.cpp">
@@ -125,6 +134,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CrashHandler.h">
+      <Filter>FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundClip.h">
+      <Filter>FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundCoroutine.h">
+      <Filter>FrameWork</Filter>
+    </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>FrameWork</Filter>
     </ClInclude>

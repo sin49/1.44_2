@@ -18,12 +18,6 @@ namespace GameD {
     // ==========================================
     // [MIDI Native Synth 클래스]
     // ==========================================
-  
-
-
-
-
-
 
     int g_comboCount = 0;
 
@@ -115,15 +109,18 @@ namespace GameD {
     IDWriteTextFormat* g_pTextFormat = nullptr;
 
     HRESULT CreateDeviceIndependentResources() {
-        HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_pD2DFactory);
-        if (SUCCEEDED(hr)) {
+        HRESULT hr = S_OK;
+        if (!g_pD2DFactory) {
+            hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_pD2DFactory);
+        }
+        if (SUCCEEDED(hr) && !g_pDWriteFactory) {
             hr = DWriteCreateFactory(
                 DWRITE_FACTORY_TYPE_SHARED,
                 __uuidof(IDWriteFactory),
                 reinterpret_cast<IUnknown**>(&g_pDWriteFactory)
             );
         }
-        if (SUCCEEDED(hr)) {
+        if (SUCCEEDED(hr) && !g_pTextFormat && g_pDWriteFactory) {
             hr = g_pDWriteFactory->CreateTextFormat(
                 L"맑은 고딕",
                 NULL,
@@ -162,6 +159,9 @@ namespace GameD {
         g_white.isCooldown = false;
         g_white.cooldownTimer = 0.0f;
         g_white.blinkTimer = 0.0f;
+
+        // ⭐ 흰 돌이 새로 스폰될 때 이전 장외 효과음의 피치 왜곡을 확실하게 복구
+        SoundManager::ResetSFXChannels();
     }
 
     void InitGame() {
@@ -241,6 +241,7 @@ namespace GameD {
         if (g_gameTimer <= 0.0f) {
             g_gameTimer = 0.0f;
             g_gameState = STATE_GAMEOVER;
+            SoundManager::ResetSFXChannels(); // 게임 오버 시 채널 정리
             return;
         }
 
@@ -273,7 +274,8 @@ namespace GameD {
 
             if (g_white.x < BOARD_START_X || g_white.x > BOARD_START_X + BOARD_WIDTH ||
                 g_white.y < BOARD_START_Y || g_white.y > BOARD_START_Y + BOARD_HEIGHT) {
-                SoundManager::PlayOutSFX(); // ⭐ 장외 이탈 사운드 재생!
+
+                SoundManager::PlayOutSFX(); // ⭐ 장외 이탈 사운드 재생[cite: 1]
                 StartCooldown(1.0f);
             }
         }
@@ -340,7 +342,7 @@ namespace GameD {
                         g_score += 50;
                     }
 
-                    SoundManager::PlayHitSFX(g_comboCount); // ⭐ 콤보 타격 사운드!
+                    SoundManager::PlayHitSFX(g_comboCount); // ⭐ 콤보 타격 사운드![cite: 1]
                     g_comboCount++;
 
                     ResetWhiteStone();
@@ -385,7 +387,7 @@ namespace GameD {
                         swprintf_s(textBuf, 32, L"%d연타! +75", e1.chainHitCount);
                     }
 
-                    SoundManager::PlayHitSFX(g_comboCount); // ⭐ 체인 히트 사운드!
+                    SoundManager::PlayHitSFX(g_comboCount); // ⭐ 체인 히트 사운드![cite: 1]
                     g_comboCount++;
 
                     AddFloatingText(e2.x, e2.y, textBuf);
@@ -399,17 +401,19 @@ namespace GameD {
     // ==========================================
 
     void RenderButtonD2D(D2D1_RECT_F rect, const wchar_t* text, D2D1_COLOR_F bgColor) {
+        if (!g_pRenderTarget || !g_pTextFormat) return;
         ID2D1SolidColorBrush* pBrush = nullptr;
-        g_pRenderTarget->CreateSolidColorBrush(bgColor, &pBrush);
-        g_pRenderTarget->FillRectangle(rect, pBrush);
+        if (SUCCEEDED(g_pRenderTarget->CreateSolidColorBrush(bgColor, &pBrush)) && pBrush) {
+            g_pRenderTarget->FillRectangle(rect, pBrush);
 
-        pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::White));
-        g_pRenderTarget->DrawRectangle(rect, pBrush, 2.0f);
+            pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+            g_pRenderTarget->DrawRectangle(rect, pBrush, 2.0f);
 
-        g_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-        g_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-        g_pRenderTarget->DrawTextW(text, (UINT32)wcslen(text), g_pTextFormat, rect, pBrush);
-        pBrush->Release();
+            g_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+            g_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+            g_pRenderTarget->DrawTextW(text, (UINT32)wcslen(text), g_pTextFormat, rect, pBrush);
+            pBrush->Release();
+        }
     }
 
     void DrawArrow(float startX, float startY, float angle, float length, ID2D1SolidColorBrush* pBrush) {
@@ -425,6 +429,7 @@ namespace GameD {
     }
 
     void DrawSquareEnemy(float centerX, float centerY, float radius, const wchar_t* symbol, int hp, int maxHp, ID2D1SolidColorBrush* pBrush) {
+        if (!g_pRenderTarget || !pBrush) return;
         D2D1_RECT_F rect = D2D1::RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 
         pBrush->SetColor(D2D1::ColorF(210.0f / 255.0f, 160.0f / 255.0f, 100.0f / 255.0f));
@@ -433,10 +438,12 @@ namespace GameD {
         pBrush->SetColor(D2D1::ColorF(80.0f / 255.0f, 40.0f / 255.0f, 10.0f / 255.0f));
         g_pRenderTarget->DrawRectangle(rect, pBrush, 2.0f);
 
-        pBrush->SetColor(D2D1::ColorF(180.0f / 255.0f, 20.0f / 255.0f, 20.0f / 255.0f));
-        g_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-        g_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-        g_pRenderTarget->DrawTextW(symbol, 1, g_pTextFormat, rect, pBrush);
+        if (g_pTextFormat) {
+            pBrush->SetColor(D2D1::ColorF(180.0f / 255.0f, 20.0f / 255.0f, 20.0f / 255.0f));
+            g_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+            g_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+            g_pRenderTarget->DrawTextW(symbol, 1, g_pTextFormat, rect, pBrush);
+        }
 
         if (maxHp > 1) {
             float barWidth = radius * 2.0f;
@@ -533,19 +540,26 @@ namespace GameD {
     }
 
     void RenderTitleScreenD2D() {
+        if (!g_pRenderTarget || !g_pTextFormat) return;
+
         ID2D1SolidColorBrush* pBrush = nullptr;
-        g_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(1.0f, 0.85f, 0.4f), &pBrush);
-        g_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-        g_pRenderTarget->DrawTextW(L"STONE SHOOTER", 13, g_pTextFormat, D2D1::RectF(0, 100, WINDOW_WIDTH, 140), pBrush);
-        pBrush->Release();
+        if (SUCCEEDED(g_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(1.0f, 0.85f, 0.4f), &pBrush)) && pBrush) {
+            g_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+            g_pRenderTarget->DrawTextW(L"STONE SHOOTER", 13, g_pTextFormat, D2D1::RectF(0, 100, WINDOW_WIDTH, 140), pBrush);
+            pBrush->Release();
+            pBrush = nullptr;
+        }
 
         // 릴레이 맞춤형 UI
         RenderButtonD2D(BTN_START_RECT, L"START GAME", D2D1::ColorF(0.15f, 0.55f, 0.27f));
         RenderButtonD2D(BTN_EXIT_RECT, L"END RELAY", D2D1::ColorF(0.70f, 0.24f, 0.24f));
 
-        g_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0.7f, 0.7f, 0.7f), &pBrush);
-        g_pRenderTarget->DrawTextW(L"[LEFT/RIGHT] AIM   |   [SPACE] SHOOT", 38, g_pTextFormat, D2D1::RectF(0, 420, WINDOW_WIDTH, 450), pBrush);
-        pBrush->Release();
+        if (SUCCEEDED(g_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0.7f, 0.7f, 0.7f), &pBrush)) && pBrush) {
+            g_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+            g_pRenderTarget->DrawTextW(L"[LEFT/RIGHT] AIM   |   [SPACE] SHOOT", 38, g_pTextFormat, D2D1::RectF(0, 420, WINDOW_WIDTH, 450), pBrush);
+            pBrush->Release();
+            pBrush = nullptr;
+        }
     }
 
     bool IsPointInRectF(POINT pt, D2D1_RECT_F rect) {
@@ -557,7 +571,9 @@ namespace GameD {
     // ==========================================
     void Init(HWND hWnd) {
         g_pRenderTarget = ::g_pRenderTarget;
-        if (!g_pDWriteFactory) CreateDeviceIndependentResources();
+        if (!g_pDWriteFactory || !g_pTextFormat) {
+            CreateDeviceIndependentResources();
+        }
 
         gameoverchecker = false;
         isForceEndRelay = false;
@@ -576,10 +592,18 @@ namespace GameD {
     }
 
     void Release() {
-        if (g_pTextFormat) g_pTextFormat->Release();
-        if (g_pDWriteFactory) g_pDWriteFactory->Release();
-        if (g_pD2DFactory) { g_pD2DFactory->Release(); g_pD2DFactory = nullptr; }
-    
+        if (g_pTextFormat) {
+            g_pTextFormat->Release();
+            g_pTextFormat = nullptr;
+        }
+        if (g_pDWriteFactory) {
+            g_pDWriteFactory->Release();
+            g_pDWriteFactory = nullptr;
+        }
+        if (g_pD2DFactory) {
+            g_pD2DFactory->Release();
+            g_pD2DFactory = nullptr;
+        }
     }
 
     bool IsGameOver() {
@@ -641,7 +665,7 @@ namespace GameD {
                     g_white.vx = cosf(g_white.angle) * speed;
                     g_white.vy = sinf(g_white.angle) * speed;
 
-                    SoundManager::PlayShootSFX(); // ⭐ 발사 사운드 재생!
+                    SoundManager::PlayShootSFX(); // ⭐ 발사 사운드 재생![cite: 1]
                 }
             }
         }

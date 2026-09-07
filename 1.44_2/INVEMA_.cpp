@@ -788,6 +788,7 @@ public:
             deathStartY = player.y;
             deathSplitSoundPlayed = false;
 
+            SoundManager::StopSceneBGM();
             SoundManager::PlayInvemaDeath();
             TriggerShake(3.0f, 0.25f);
         }
@@ -1323,6 +1324,7 @@ void PlayScene::Update() {
             BuildShapePolygon(gp);
             giantPillars.push_back(gp);
         }
+        SoundManager::PlayInvemaGimmickWarning();
     }
 
     for (auto it = giantPillars.begin(); it != giantPillars.end();) {
@@ -1334,7 +1336,7 @@ void PlayScene::Update() {
                 gp.state = GIANT_EXTENDING;
                 gp.timer = 0.35f;
                 gp.currentLength = -250.0f;
-                SoundManager::PlayRetroBeep(40, 250);
+                SoundManager::PlayInvemaBeamExtend();
                 TriggerShake(4.0f, 0.35f);
             }
         }
@@ -1350,7 +1352,7 @@ void PlayScene::Update() {
                     gp.timer = 5.5f;
                     TriggerShake(7.0f, 0.3f);
                     SpawnPillarParticles(centerX, centerY, 20);
-                    SoundManager::PlayRetroBeep(32, 300);
+                    SoundManager::PlayInvemaBeamImpact();
                 }
             }
             else {
@@ -1461,7 +1463,7 @@ void PlayScene::Update() {
             pillar.timer -= dt;
             if (pillar.timer <= 0.0f) {
                 pillar.isWarning = false; pillar.isActive = true;
-                SoundManager::PlayRetroBeep(52, 100); TriggerShake(3.0f, 0.2f);
+                SoundManager::PlayInvemaSmallPillarRise(); TriggerShake(3.0f, 0.2f);
                 float cx = (pillar.box.minX + pillar.box.maxX) / 2.0f;
                 float cy = (pillar.box.minY + pillar.box.maxY) / 2.0f;
                 SpawnPillarParticles(cx, cy, 8);
@@ -1632,7 +1634,7 @@ void PlayScene::Update() {
             if (len > 0) {
                 enemies[idx].targetDirX = dx / len; enemies[idx].targetDirY = dy / len;
             }
-            SoundManager::PlayRetroBeep(80, 100);
+            SoundManager::PlayInvemaTargetLock();
         }
         targetLockTimer = 10.0f;
     }
@@ -1683,7 +1685,7 @@ void PlayScene::Update() {
                 enemy.isTargeting = false;
                 enemy.vx = enemy.targetDirX * 60.0f;
                 enemy.vy = enemy.targetDirY * 60.0f;
-                SoundManager::PlayRetroBeep(72, 150);
+                SoundManager::PlayInvemaChargeRush();
             }
         }
         else if (enemy.type == ENEMY_HEXAGON) {

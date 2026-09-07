@@ -5,8 +5,60 @@
 #include <filesystem>
 #include <thread>
 #include <algorithm>
+#include "SoundClip.h"
 
 namespace SoundManager {
+    enum class BGMType {
+        None,
+        Title,
+        GameA,
+        GameB,
+        GameC,
+        GameD,
+        GameE,
+        Settings,
+        Ranking
+    };
+
+    enum class SFXId {
+        Coin,
+        Jump,
+        Explosion,
+        Fanfare_0,
+        Fanfare_1,
+        Fanfare_2,
+        Charging,
+        Scratch,
+        Dash,
+        EnergyBeam,
+        Stun,
+        Alarm,
+        MachineGun,
+        Cannon,
+        InvemaLaser,
+        InvemaBulletHit,
+        InvemaEnemyBounce,
+        InvemaPillarHit,
+        InvemaDash,
+        InvemaSwordSlash,
+        InvemaShieldDeflect,
+        InvemaItemStar,
+        InvemaItemShield,
+        InvemaHexExplosion,
+        InvemaDeath,
+        InvemaGimmickWarning,
+        InvemaBeamExtend,
+        InvemaBeamImpact,
+        InvemaSmallPillarRise,
+        InvemaTargetLock,
+        InvemaChargeRush,
+        ShootSFX,
+        OutSFX,
+        AutoBattleAttackMelee,
+        AutoBattleAttackRanged,
+        AutoBattleMagicCast
+    };
+
     void Initialize();
     void Release();
 
@@ -14,6 +66,12 @@ namespace SoundManager {
     void SetSFXVolume(float volume);
     void SetBGMVolume(float volume);
 
+    // 통합 음원 객체 재생 API
+    void Play(SFXId id);
+    void PlaySceneBGM(BGMType type);
+    void StopSceneBGM();
+    void StopAllSounds();
+    void ResetSFXChannels(); // ⭐ 피치 벤드/컨트롤러 오염 강제 복구 API 추가
     void PlayBGM(const wchar_t* filename);
     void StopBGM();
 
@@ -53,4 +111,15 @@ namespace SoundManager {
     void PlayInvemaItemShield();
     void PlayInvemaHexExplosion();
     void PlayInvemaDeath();
+    void PlayInvemaGimmickWarning();
+    void PlayInvemaBeamExtend();
+    void PlayInvemaBeamImpact();
+    void PlayInvemaSmallPillarRise();
+    void PlayInvemaTargetLock();
+    void PlayInvemaChargeRush();
+
+    // [Game B: AutoBattle 전용 효과음]
+    void PlayAutoBattleAttackMelee();
+    void PlayAutoBattleAttackRanged();
+    void PlayAutoBattleMagicCast();
 }

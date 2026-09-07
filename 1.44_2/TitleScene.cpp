@@ -14,7 +14,7 @@ namespace TitleScene
     const int BTN_COUNT = 5;
 
     void Init() {
-        SoundManager::Initialize(); selectedBtn = 0; hoverBtn = -1;  SoundManager::PlayBGM(L"title.mid");
+        SoundManager::Initialize(); selectedBtn = 0; hoverBtn = -1;
     }
 
     // 방향키 이동만 Update에서 처리
